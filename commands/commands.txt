@@ -1,0 +1,10 @@
+terraform state list
+terraform state show
+terraform state show azurerm_resource_group.example
+terraform destroy
+terraform apply
+az network vnet show --name barathvn --resource-group barath-default
+terraform import azurerm_virtual_network.barath /subscriptions/bf7e75db-e819-49ca-b6d2-69c32a2353fe/resourceGroups/barath-default/providers/Microsoft.Network/virtualNetworks/barathvn
+terraform state list
+terraforms state show azurerm_virtual_network.barath
+terraform state show azurerm_virtual_network.barath
