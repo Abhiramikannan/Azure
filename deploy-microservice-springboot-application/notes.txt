@@ -1,0 +1,51 @@
+aim: deploying the application in azure
+
+1. created the cluster using terraform
+2. attached the container registry from portal
+3. created the sql database and server(location match the cluster)
+
+create vm and get inside vm and clone the repo and do the things 
+4. cd CustomerApp/
+5.  cd src/main/resources/
+6. nano application.properties  - added my jdbc in the connection string in the settings
+                                  spring.datasource.url=jdbc:sqlserver://abhi-server1.database.windows.net:1433;database=abhi-database;user=abhi@abhi-server1;password=dev@1234;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+                                  spring.jpa.hibernate.ddl-auto= update
+
+                                  password = u have given while creating database
+7. cd ../../..
+8. build the image 
+        docker build -t abhicontainerregistry.azurecr.io/customerapp:latest .
+9. push the image into ACR 
+        docker push abhicontainerregistry.azurecr.io/customerapp:latest = wont work
+10. install az  
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+11. az login   ( in ur container registry: push an image)
+    az acr login --name abhicontainerregistry
+12. now try pushing:
+        docker push abhicontainerregistry.azurecr.io/customerapp:latest
+13. pushed..
+14. go to kubernetes
+15.create deployment and service 
+16. get an external ip for load balancer
+17. google: postman web = to check backend is working
+        without connecting frontend we can try backend is working through postman
+        give raw and body
+        get:   http://74.224.103.188/api/customers/
+
+
+react project:
+1. clone the repo
+2.  nano src/services/CustomerServices.js
+            change the ip into ur external ip(4th or 5th line)
+3. npm install
+4. npm run build 
+5. build image:
+     docker build -t abhicontainerregistry.azurecr.io/customerapp-react:latest .
+6. push it:
+        docker push abhicontainerregistry.azurecr.io/customerapp-react:latest
+
+7. run on kubernetes
+        create deployment 
+        take external ip
+        google: externalip/customers 
+                        this connects u to that web 
