@@ -1,0 +1,1 @@
+ You're learning how to create and deploy serverless functions to Azure Functions using the Azure Developer CLI (azd).

@@ -1,0 +1,1 @@
+https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-azure-developer-cli?pivots=programming-language-java&tabs=linux%2Cget%2Cbash%2Cpowershell
