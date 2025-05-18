@@ -1,0 +1,23 @@
+What is a Custom Role in Azure?
+    A custom role is a user-defined role where you specify:
+    Actions allowed (like Microsoft.Compute/virtualMachines/start/action)
+    Actions denied (optional)
+    Assignable scope (which subscription/resource group it applies to)
+    It's basically:
+    "I want this person to do THIS, and only THIS."
+
+
+Why are you creating a custom role?
+    Built-in roles (like Contributor, Reader, Owner) might give too much or too little access.
+    You want to give exact permissions needed for a specific task.
+
+Example:
+→ Allow user to only start/stop VMs, but not delete them.
+→ Built-in roles don't give such fine control.
+
+ So, custom roles = Granular & Controlled Access.
+
+ practical:
+    subscription ->access control ->add ->customrole -> clone a role ->Contributor
+    to give access ->add permissions on top
+    assign roles ->add role assignment 
