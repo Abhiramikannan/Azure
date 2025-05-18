@@ -1,0 +1,58 @@
+ACI:
+    Azure Container Instances
+Like creating a pod in AKS, but lighter—you just define and run containers directly.
+Multiple containers can run together in a container group.
+Use for quick deployment, testing, or lightweight microservices.
+No built-in load balancing or auto-scaling like AKS.
+
+    in aws:
+        ecs
+
+Aci quickstart Images:
+    wont work
+    need to give secrets of dockerhub
+    DockerHub rate limits hit
+    Private image requires login
+
+microsoft manage keys:
+    key : whenever u have encrypt u have to use key
+        symmetric
+        asymmetric
+    in this case azure needs this keys
+    using: to improve the security of data running there
+
+    eg:
+        customer management key: hotel allows customer to have their own key
+        hotel management key: hotel provides and customer wont have trust (microsoft)
+
+Why Use Multi-Container YAML in Azure Container Instances (ACI)?
+    To run multiple containers (like a web app + database or API + sidecar) in one group, using a single YAML file.
+    Benefits:
+        All containers share:
+        Network (can talk via localhost)
+        Storage (volumes) if needed
+        Lifecycle (start/stop together)
+        Easier management and deployment
+      Great for microservice-based apps
+
+link:
+    https://learn.microsoft.com/en-us/azure/container-instances/container-instances-multi-container-yaml
+
+
+
+ACI vs Web App vs Function App:
+
+Azure Container Instance (ACI)
+        Runs containers directly without managing servers.
+        Supports multiple containers in one group (via YAML).
+        Good for custom apps or microservices.
+
+Azure Web App
+        Hosts websites and APIs (code or container).
+        Has built-in scaling, SSL, and load balancing.
+        Best for long-running web apps.
+
+Azure Function App:
+        Runs small, event-driven code (like a cron job).
+        Auto-scales based on trigger (HTTP, timer, etc.).
+        Great for lightweight tasks and background jobs.
