@@ -1,0 +1,50 @@
+Monitoring:
+    Created a new Resource Group (RG).
+    Created a VNet with a private subnet.
+    NSG added directly to VMs (not subnets).
+    Created a VM attached to a public subnet with a public security group.
+    Gained access to the VM, set permissions for the pem file (chmod 400 pemfile).
+    installed docker
+    ran Nginx in a container (docker run -d -p 80:80 nginx).
+
+network watcher:
+    search network watcher
+relative service :
+    same place
+    like that machine in india ip address in america in diff locn=no sense
+
+create 1 more vm using private subnet
+add monitor somethg
+    install docker
+        #!/bin/bash
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+        sudo docker run -d -p 80:80 nginx
+    alert
+    get indise vm and check =docker installed/not
+in network watcher
+    in the machie u use
+create a connection monitor
+    add network plugin =then oonly monitor -instaled on destination
+    source -public subnet
+    destination -private 
+    incomming to source cant be tracked(what someone is talking to me )
+    track only destination(what im hearing)
+
+test configuration:
+    traffic it has to monitor
+    created 
+    vm public to vm pvt (whatever receives tracked)
+
+
+ip flow verify:
+local port:
+    destination
+remote port:
+    source port
+
+    public ip:
+        taking outside the azure- fails -use private ip=works
+    machines have ports
+        0-1024 =restricted ports
+        machine will pick up from 1024 
