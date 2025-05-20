@@ -1,14 +1,16 @@
 DEVOPS:
 DevOps is a combination of
-● tools,
-● practices, and
-● cultural philosophy
+   ● tools,
+   ● practices, and
+   ● cultural philosophy
 that helps in delivering high-quality software faster and more reliably through automation and
 collaboration.
+
 Gate Management in DevOps:
 ● Acts as a control checkpoint
 ● Used to decide when to allow a process or deployment to move forward
 ● Helps in improving quality by catching issues early and reducing technical debt
+
 DevOps is a combination of 3 things:
 1️⃣Tools
 Used for automation, integration, and tracking:
@@ -46,6 +48,7 @@ Ans:
 ● Cloud allows you to host and scale your product globally.
 ● No need to maintain physical servers.
 ● Helps in faster go-to-market and availability.
+
 CLOUD SERVICE MODELS:
 1. IaaS: Cloud model where you rent complete infrastructure (like virtual machines, storage,
 networks) from a provider (e.g., Azure), and you manage everything on top of it.
@@ -59,6 +62,7 @@ Self service provisioning:
 pipeline,network,subnet)
 ● portal - self explanatory(dont need trainer)
 ● dis: time,consistency
+
 Q. why so many options like Azure ARM template,Azure Bicep,Terraform?
 Ans:
 1. ARM Templates (Azure Resource Manager)
@@ -66,6 +70,7 @@ Ans:
 ● 👴 Oldest Azure-native tool
 ● ✅ Works well, but harder to read and maintain
 ● 🧱 Forms the base for newer tools like Bicep
+
 2. Bicep
 ● ✅ New and improved version of ARM Templates
 ● 🛡 More secure, easier to write, and modular
@@ -73,6 +78,7 @@ Ans:
 ● 📦 Supports all new Azure features
 ● 🚀 If you're fully using Azure – Bicep is the best choice
 🔄 Think of Bicep as a simpler, modern language that internally converts to ARM.
+
 3. Terraform
 ● ⚙️ Created by HashiCorp (a third-party company)
 ● Hashicorp - Other company, not from azure and microsoft
@@ -108,6 +114,7 @@ sharing all the resources
 ★ Can lead to issues in industry-specific high-security needs
 ★ Some company needs higher security, Solution-> companies coming up together -> still
 fails.
+
 Q. How does IaaS work?
 ★ IaaS (Infrastructure as a Service) provides virtual infrastructure (like VMs, storage,
 network) but you manage everything above it — like the OS, middleware, and
@@ -127,6 +134,7 @@ What You Need to Maintain in IaaS:
 ★ So you must externalize the data
 ★ external database store in redis,memcache (no sql) - key value pair db
 ★ if u r storing by urself -> u have to take care of that
+
 Q. Why Services Don't Store Data by Themselves?
 ● To scale easily and avoid data loss.
 ● Example: During an Amazon flash sale, 10,000+ people may add laptops
@@ -135,6 +143,7 @@ store data inside themselves, new servers start fresh and old data is lost,
 but if they're stateless and use external databases, all instances share
 the same data, enabling seamless scaling and consistent user
 experience.
+
 Q. Beneits of IaaS?
 ■ 💸 Cost Reduction
 No need to invest in physical infrastructure. Pay-as-you-go model helps cut
@@ -151,6 +160,7 @@ latency.
 ★ 🔐 Data Security and Compliance
 Data can be encrypted and moved to specific regions to comply with local
 regulations and standards.
+
 Q. Challenges of Iaas?
 ● Security & Vulnerabilities
 Cloud platforms may face vulnerabilities — providers send alerts, but you must apply patches
@@ -170,10 +180,12 @@ Old systems (legacy apps) may not work smoothly with new cloud or automation too
 extra effort or changes may be needed to make them work together.
 ● Dependency on Cloud Provider
 Service interruptions, pricing changes, or policy shifts by the provider can impact your business.
+
 Q. categories of cloud?
 ★ Public - Shared among multiple users
 ★ Private - Used by single organization
 ★ Hybrid - Mix of public and private clouds
+
 Q. How u can trust the vm provided is secure and no one have ownership?
 ➔ Limited Access: Less than 2% of employees, even from outside the company, have access to
 the data centers. Only authorized people can access the VMs.
@@ -182,6 +194,8 @@ organization has the private encryption keys (PEM files).
 ➔ Secure despite Attacks: While attacks can happen (like software vulnerabilities), the cloud
 ensures data security. Most attacks are common software-related ones, not specific to the
 cloud.
+
+
 2. PaaS (Platform as a Service): web based
 ● Scalability:
 PaaS allows you to scale your applications without worrying about the underlying infrastructure.
@@ -206,9 +220,11 @@ AKS is a PaaS platform for managing and scaling containerized applications using
 ● Real-World Example:
 MakeMyTrip — A PaaS product that allows businesses to build and customize their services
 while the platform manages the infrastructure.
+
 Q. Key charecteristics of Paas?
 ➔ Integrated DB and Backend Services: All parts of the system (e.g., database, APIs, and
-services) work together seamlessly.
+services) work together seamlessly
+
 Q. Benefits of PaaS?
 ➔ Non-Functional Requirements:
 ◆ Solutions span across all modules, ensuring uniform performance,
@@ -228,6 +244,7 @@ requirements), they also expect things like performance, reliability, and qualit
 requirements). Customers rarely mention these non-functional needs, but they expect them to be met.
 RFP - document to submit proposals for a specific project
 A proposal is a detailed document submitted by a vendor in response to an RFP.
+
 Benefits of PaaS:
 1. Accelerated Dev Cycles:
 PaaS provides pre-configured tools, speeding up development and deployment.
@@ -243,6 +260,7 @@ PaaS supports various programming languages and tools, offering flexibility.
 Teams can work together in real-time with shared resources.
 7. Faster Time to Market:
 Streamlined processes help deliver products to market more quickly.
+
 Challenges of PaaS:
 1. Vendor Lock-In:
 Migrating from one PaaS to another can be difficult and costly.
@@ -256,6 +274,7 @@ Some PaaS solutions have restrictions on how much you can customize the environm
 Performance may vary, and you lack control over the infrastructure.
 6. Cost Management:
 Costs can increase unexpectedly if usage is not carefully monitored.
+
 22/04/25
 Strategy vs Tactics
 ➔ Strategy → Long-term plan (vision-level)
@@ -267,6 +286,7 @@ Strategy vs Tactics
 ➔ tactics for solving performance and tactics for solving Scalability is diff
 ➔ Tactic for Performance: Use Redis caching, enable GZIP compression.
 ➔ Tactic for Scalability: Use Kubernetes HPA + Azure Load Balancer.
+
 Scalability
 ➔ Ability of the system to handle increasing load gracefully
 ➔ Load increases → more users, requests, events
@@ -274,6 +294,7 @@ Scalability
 ➔ Can cause latency, timeouts, or crashes if not handled
 ➔ Solution : horizontal scaling(more machines),Auto-scaling(based on CPU, memory, request
 count),distribute load equally by load balancer.
+
 Q. why iaas is more vulnerable than paas and saas?
 You manage the entire OS, patches, security groups, firewall rules, etc. A small misconfiguration
 (like leaving SSH open to the world) can expose your system. Attackers exploit weak IAM policies,
@@ -298,6 +319,8 @@ folder) and put only that into the final Docker image.
 ➔ Run time:Time when the app is running in production
 ◆ Affects performance and user experience
 ◆ Image caching doesn’t help here
+
+
 3. SAAS(software as a service)
 ➔ You access applications via a web browser
 ➔ You don’t need to install or manage the app
@@ -314,10 +337,12 @@ folder) and put only that into the final Docker image.
 ◆ Accessibility- Use it anytime, anywhere on any device
 ◆ Usability- learn how to use it easily and continue to remember it ,then the product is
 usable..
+
 scaling in kubernetes:
 ➔ hpa - adding more pods
 ➔ vpa - increase resource of pods (memory,cpu)
 ➔ ca - adding more nodes in a cluster
+
 Some imp terms
 ➔ Bastion Host: 1 machine in cloud ..from there u connect to other machines,ensure
 security from public cloud
@@ -325,6 +350,7 @@ security from public cloud
 app servers, DBs
 ● Main purpose: Secure admin access to VMs in private networks
 ● Prevents exposing all machines to the public internet
+
 Q. why use bastion host?
 ➔ No direct public access to critical servers
 ➔ Login only through Bastion Host = extra layer of security
@@ -334,6 +360,7 @@ it.”
 ➔ Notes: Port 443 → Used for HTTPS (secure web traffic)
 ◆ Need to open specific ports when doing updates/upgrades (like SSH 22, HTTPS
 443, etc.)
+
 ➔ Vnet:
 ○ VNet is like your own private network in the cloud
 ○ Used to securely connect your cloud resources like VMs, databases,
@@ -344,6 +371,7 @@ and apps
 ○ A VNet spans the entire region, Ex: Central India region
 ○ Includes multiple Availability Zones (AZs) like DataCenters in
 Trivandrum (TVM) and Kochi
+
 Subnet:
 A range of IP addresses in a VNet. Subnets help organize your network and can be used
 for isolating or segmenting different workloads.
@@ -355,15 +383,18 @@ infra
 ➔ You can create subnets for specific purposes (App, DB, Bastion, etc.)
 ➔ You can also assign subnets to specific AZs ➤ So only allowed AZs can
 communicate (controlled)
+
 Q. VNet is Account Specific:
 Each VNet is tied to your Azure account, You cannot access someone else’s VNet unless it’s
 shared with you
+
 Q. Bastion Host with VNet:
 ➔ You can attach Bastion Host to a VNet
 ➔ You need:
 ◆ Access to correct IP
 ◆ 🗝 .pem file or credentials
 ➔ If user tries to connect from unauthorized IP → Blocked
+
 Q. VNet – Public and Private
 Public VNet:
 ➔ Can be accessed from the internet
@@ -374,6 +405,7 @@ Used for internal resources only
 Bastion Host can be used within a private VNet to access internal resources securely
 External users can’t directly access the private VNet (must go through secure methods like
 Bastion Host)
+
 Q. Region in Azure
 ❖ its a geographical region where the azure has the datacenter
 ❖ azure having datacenter in central india(bombay),south and west
@@ -384,6 +416,7 @@ used..what should azure do?)
 ➢ u can have malware,terrorist attack
 ➢ keeping dc soo away (1 is attacked then use other eg: earthquake also)
 ➢ restart,os upgrade - group of machines they do it together
+
 Q.vnet peering?
 ➔ Consider there are 2 vnets
 ➔ 1 from san francisco and 1 from india
@@ -391,29 +424,35 @@ Q.vnet peering?
 ➔ Default vnet ip range -same ,so diff range needed for both vnet to possible
 ➔ Soo if we need to connect the vnet ,s without using internet we can do vnet peering b/w the vnet
 ➔ After vnet peering the machines from the both vnet can talk using private ip
+
 Q. bastion host helps to communicate using private ip within the vnet.how?
 ➔ Vm inside the Vnet can communicate without the internet.
 ➔ Bastion Host sits inside your VNet.
 ➔ You connect to Bastion through the Azure portal.
 ➔ Bastion then connects to your VM using its private IP, without needing internet or a public IP.
 ➔ So, Bastion acts like a secure door to reach your VMs inside the private network.
+
 Note:
 You connect to the Bastion Host through Azure Portal using HTTPS (port 443).From
 the Bastion Host, it initiates RDP/SSH connection to the target VM using its private IP address.
+
 Q. private cloud:
 ➔ protected
 ➔ u have better control for dc(people with right access)
 ➔ more security
 ➔ still vulnerable to various kinds of attacks
 ➔ install vpn
+
 Q. scaleset - It is a service
 ➔ automatically scale no of vm
 ➔ create load balancer in front of scale set
 ➔ If load increases,vm increases
+
 Q. fault domain - distribute vm across multiple fault domains
 ➔ 5 vm created from3 phy machines
 ➔ if 3 of the phy machines undergoes (restart,upgrade)-maintenance affected
 ➔ solution : fault domain
+
 23/04/25
 Q.while creating vm what are things we are doing in azure?
 ➔ mention resource grp-(like a container to manage multiple resources)-(VM, disk, VNet, etc.)
@@ -427,6 +466,7 @@ image(ubuntu,windows)
 ➔ Inbound & Outbound Traffic
 ◆ Define inbound rules (e.g., open port 22 for SSH or 3389 for RDP).
 ◆ Outbound is usually allowed by default unless restricted.
+
 Q. What is subnetting?
 ➔ Let's consider 3 diff network - deepa,hr,azure
 ➔ when the req come = need CIDR (10.0.0.0/24)
@@ -458,15 +498,18 @@ Q. Azure IP Reservation Rule?
 ➔ Azure reserves 5 ip (first 4 and last1)
 ➔ First 4 IPs: Reserved for protocols and Azure services (e.g., .0 - .3)
 ➔ Last IP: Reserved for network broadcast (e.g., .255)
+
 Q. permission denied concepts in our vm?
 ➔ Creating a new resource group
 ➔ So need to use the existing one
 ➔ Cant move vnet to other regions
 ➔ Tried to create users -failed
+
 Q. NAT Gateway?
 ➔ You created a private subnet
 ➔ VMs inside this cannot be accessed from the internet.
 ➔ To allow these VMs to go out to internet, you need a NAT Gateway
+
 PRACTICAL:
 ● created virtual network with ip range 10.1.0.0/16 for front-end
 ● Back-end = 10.1.1.0
@@ -476,6 +519,7 @@ PRACTICAL:
 ○ Frontend Subnet (Public)
 ○ Backend Subnet (Public — but no Public IP assigned)
 ○ Private Subnet
+
 2. Virtual Machines
 ● Frontend VM
 ○ Subnet: Frontend
@@ -489,6 +533,7 @@ PRACTICAL:
 ○ Subnet: Private
 ○ No Public IP ❌
 ○ Intended to be completely private (internal access only)
+
 🔹 3. Network Security Groups (NSGs): Defining who can access what
 🔸 Created 3 Separate NSGs:
 ● Frontend NSG
@@ -498,6 +543,7 @@ PRACTICAL:
 ● Frontend NSG → Associated with Frontend VM
 ● Backend NSG → Associated with Backend VM
 ● Private NSG → Associated with Private VM
+
 🔹 4. NetworkSecurityGroup Rules
 ✅ Frontend + Backend (Public) Subnets:
 ● Inbound Rule:
@@ -703,35 +749,42 @@ Q. Benefits of using Resource Groups in Azure:
 ➔ Simplified Management
 ◆ It’s easier to handle and organize related resources (like VMs, disks, IPs) together in one
 group. You can also use tags for better tracking and organizing.
+
 Q.how do u manage resource grps?
 ➔ azure portal,cli,arm template,sdk
+
 Q. Azure Resource Manager (ARM)?
 ➔ It’s the management layer in Azure.
 ➔ Handles deployment, management, and organization of Azure resources.
 ➔ You can define resources using ARM templates (JSON).
 ➔ Supports RBAC, policies, and tagging for governance.
 ➔ You can group related resources into Resource Groups.
+
 Q. Resource Locking?
 ● Prevents accidental deletion or modification.
 ● Two types:
 ○ ReadOnly – can't update or delete.
 ○ CanNotDelete – can read and update, but cannot delete.
 ● Lock can be applied to resource, resource group, or subscription.
+
 Q. Azure subscriptions?
 A container for resources and billing.
 ➔ Every subscription is associated with a payment account.
 ➔ Different subscriptions are independent — resources in one don’t affect the other.
 ➔ Helpful for organizing departments, environments, or projects.
+
 Q. azure account:
 ➔ account associated to email id and internally associated to entra id (database of
 users)-these all associated to tenant
 ➔ Entra id =database of users
+
 Q. What You Get When You Create an Azure Account?
 ➔ Account – Linked to your email.
 ➔ Tenant – Your own isolated space in Azure.
 ➔ Azure Entra ID – Where your user is registered.
 ➔ Default Subscription – Helps define policy and billing boundaries.
 ➔ (Optional) Resource Group – You can create this later; not automatically related.
+
 Q. primary entra id - associated with tenant ?
 ➔ When you create an Azure account, a primary Entra ID (directory) is automatically created and
 linked to a specific tenant.
@@ -742,11 +795,13 @@ Azure Account (your email)
 └──► Primary Tenant
 │
 └──► Primary Entra ID (Directory of users, groups, roles)
+
 Q. Azure subscription types?
 ➔ Free Trial
 ➔ Pay-As-You-Go (PAYG)
 ➔ Azure AD Premium P1
 ➔ Azure AD Premium P2
+
 Q. when you create the group,the membership type becomes assigned. Then what happens?
 ➔ When you create a group in Azure Entra ID (formerly Azure AD), the membership type
 depends on your license level:
@@ -761,6 +816,7 @@ location, etc.).
 ➔ it will change in p1 nd p2-(dynamic)
 ➔ dynamic membership becomes available only if your tenant has P1 or P2 license.
 ➔ Otherwise, it stays as Assigned.
+
 Q.forecast and actual in azure budgets?
 ➔ Forecast::
 ◆ The forecast is an estimate of how much you will spend on Azure services based on
@@ -773,6 +829,7 @@ usage patterns. This prediction is the forecast.
 ◆ Example: After 15 days into the next month, you check your actual usage and find that
 you have already spent $60 on Azure services. This is your actual spending up to that
 point.
+
 Q. Vnet pairing practical?
 ➔ create vnet using azure client
 ➔ Login to Azure CLI:
@@ -828,23 +885,27 @@ abhi-resource-group --vnet-name abhi-vnet2 --remote-vnet abhi-vnet
 ● ping <private-ip-of-abhi-vm2>
 ◆ Ping from VM2 to VM1 using Private IP:
 ● ping <private-ip-of-abhi-vm>
+
 25/4/25
 Q. 2 things we are doing to give permission?
 ➔ Add user to Azure group
 ➔ Mml subscription -> contributor/reader
 ➔ Contributor cannot add/modify roles
 ➔ Add role to resource group ->the user will get privileges in the resource group only.
+
 Q. Roles?
 ➔ Roles define what actions an identity can perform (e.g., read, write, delete).
 ➔ Identity- users,group,service principle-access to service
 ➔ when u attach a role to identity give access based on scope
 ➔ Scope- management grp,subscription,resource group,resource
 ➔ A role only applies within the scope it is assigned (and scopes below it).
+
 Q. . Why Use Service Principals Instead of Users?
 ➔ If access is given directly to a user, and that user leaves or is removed, the service breaks.
 ➔ Service Principals are non-human identities created specifically for apps or services.
 ◆ They provide a stable identity for services to authenticate and access resources.
 ◆ Managed by Azure AD.
+
 Q. Management Group?
 ➔ A container for subscriptions.
 ➔ You can assign roles at this level to control access across multiple subscriptions.
@@ -855,6 +916,7 @@ Q. Management Group?
 ➔ subscription within tenant associated to payment
 ➔ You can have multiple subscriptions in a tenant, useful for separating environments (prod, dev,
 etc.).
+
 Q. Microsoft Entra ID ?
 ➔ Identity and Access Management (IAM) service from Microsoft.
 ➔ Manages users, groups, service principals, roles, devices, etc.
@@ -866,6 +928,7 @@ resources).
 ➔ You do not need subscription-level permissions to create users or groups. These are controlled
 at the Azure AD level (not subscription level).
 ➔ Permissions for user management are controlled by roles assigned to users within Azure AD.
+
 Q. user administrator vs global administrator?
 1. User Administrator:
 ➔ Primary Focus: Manage users and groups within Azure AD.
@@ -883,6 +946,7 @@ Entra identities.
 configurations.
 ➔ Can configure enterprise-level settings, such as conditional access, multi-factor
 authentication, and directory settings.
+
 Q. Eventual Consistency:
 ➔ This is a model where, over time, a system will become consistent, but there may be temporary
 states where data is inconsistent. In other words, the system doesn’t guarantee immediate
@@ -893,6 +957,7 @@ reflected across all systems. For example, while one system says “payment pend
 system may say “payment processed.” Over time, these systems will sync, and the data will
 become consistent, but there's no guarantee of immediate consistency.
 ➔ Eg: nosql database
+
 Q. ACID Properties (for Relational Databases):?
 Atomicity:
 ➔ Either all parts of the transaction are completed, or none of them are.
@@ -927,6 +992,7 @@ Durability:
 system crash.
 ➔ Example: If a transaction to update a bank balance is committed, the change is saved,
 and even if the database crashes immediately afterward, the transaction will not be lost.
+
 Q. Primary,Secondary,Territory -related to databases?
 ➔ Primary:
 The main database instance where all write operations happen first.
@@ -938,6 +1004,7 @@ Another replica — basically a third copy to add even more redundancy.
 ➔ Read Replica:
 A replica used only for read queries to reduce load on the primary. Updates from the primary are
 asynchronously synced.
+
 Q. . NoSQL Database – Sharding?
 ➔ Breaking a large database into smaller parts (shards) to distribute across multiple machines.
 Example:
@@ -956,11 +1023,13 @@ Eventually Consistent Sync
 ● Eventual Consistency:
 The replicas might not be immediately consistent after a write,
 but over time, all copies will have the same data.
+
 Q. Runbook?
 Every day evening, a runbook will trigger automatically.
 Purpose:
 → Check if any VM is active (running).
 → Based on our wish: terminate or stop the VM.
+
 Q. azure client and powershell:
 ➔ az login # Login to Azure account
 ➔ az --version # Check Azure CLI version
@@ -995,6 +1064,7 @@ table # List VM SKUs available in centralindia region starting with 'Standard_DS
 ➔ az vm list-skus --location "centralindia" --query "[?starts_with(name, 'Standard_DS')]" --output
 table # List available VM SKUs in 'centralindia' that start with 'Standard_DS', displayed in table
 format
+
 Q. storage account and Resource group?
 ➔ A Storage Account in Azure is a resource that provides storage services for your data in the
 cloud. It serves as a container for storing different types of data in Azure, such as files,
@@ -1011,6 +1081,7 @@ storage acc by executing the command env | grep -i storage ,i need to connect it
 shell.(reset user settings)
 ➔ added by clicking the storage class and created files abhi-files
 ➔ az storage account list # can see everyones storage acc
+
 Q. powershell commands:
 ➔ Connect-AzAccount # Logs into your Azure account (interactive login)
 ➔ Connect-AzAccount -UseDeviceAuthentication # Logs into Azure using device authentication
@@ -1044,10 +1115,12 @@ current resource group
 ➔ remove-AzVM -Name "abhi-vm" -ResourceGroupName "abhi-resource-group" # Removes the
 'abhi-vm' VM from the 'abhi-resource-group' resource group
 ➔ get-AzVM # Lists all virtual machines again after deletion
+
 Q. Saving plan and Reservations in Azure?
 ➔ In Azure, Savings Plans let you save money by committing to a certain amount of usage over
 time, while Reservations offer discounts for reserving specific resources like VMs for one or
 three years.
+
 Q. How do I automate the termination of Spot Instances and the stopping of Normal Instances
 based on a scheduled time using a script in Azure?
 ➔ Create an automation account
@@ -1058,6 +1131,7 @@ based on a scheduled time using a script in Azure?
 ➔ Publish
 ➔ Create a schedule in automation acc
 ➔ Link the schedule to runbook
+
 Q. what is automation account?
 ➔ An Automation Account in Azure is a cloud service that provides a way to automate repetitive
 tasks and processes in your Azure environment, such as resource management, configuration,
@@ -1069,9 +1143,11 @@ needing to do so manually each time.
 ● Runbooks: automate tasks like stopping vm
 ● Update Management: update vm to make it secure
 ● Scheduling: set tasks to run at specific time
+
 Q. How to create automation account in azure?
 ➔ Search for automation account
 ➔ create
+
 Q. What are Managed Identities in Azure?
 ➔ Managed Identities are identities provided by Azure Active Directory (azure AD)
 ➔ allow Azure services to authenticate to each other without the need for credentials
@@ -1093,8 +1169,10 @@ a virtual machine (VM), app service, or function.
 resources.
 ● it stays around until you manually delete it.
 ● Used across multiple resources
+
 Q. To see all resources/services who use managed identities?
 ➔ entraid - enterprice application - application-type=manged identities -apply
+
 Q. How can I give access to managed identities?
 ➔ ResourceGroup - IAM - Add role assignment - Reader/contributor
 ➔ In reader - member - Managed identity -select member -managed identity(automation accout)
@@ -1102,6 +1180,7 @@ Q. How can I give access to managed identities?
 ➔ Once access granted,update the automation account
 ➔ Go to Automation Account > Modules > Set the runtime version to 7.2.
 ➔ Apply any necessary modules to automate tasks.
+
 Q. Shared Resources and Modules in Azure Automation:?
 ➔ Shared Resources:
 ◆ Reusable components like scripts, credentials, variables, etc.
@@ -1112,11 +1191,13 @@ there)
 ◆ Modules are collections of ready-made commands that help automate tasks in Azure.
 ◆ Pre-built sets of PowerShell cmdlets to interact with Azure services.(creating vm)
 ◆ Example: AzureRM.Compute module to manage VMs.
+
 Q. what all the other ways to achieve automation in azure?
 ➔ Powershell
 ➔ Python
 ➔ Function as a service
 ➔ App functions(azure app services)
+
 Q. How to create a runbook?
 ➔ Automation account - side - process automation -runbook -create
 ➔ Code done in class:
@@ -1131,6 +1212,7 @@ $AzureContext
 ➔ click testpane
 ➔ start
 ➔ Stopped -not working
+
 Q. Function app in azure?
 ➔ A Function App is a container for running your Azure Functions.
 ➔ You can use this instead of azure automation
@@ -1146,21 +1228,24 @@ changes in Azure storage.
 ◆ create azure function using azure portal:
 ◆ create resource -search function -app -create -pin to dashboard
 ◆ function app -create new -choose webhook+api = httptrigger1
+
 Q. azure functions:
 Azure Functions is the code that you write and run in response to events or triggers.
 ➔ Pay Only for What You Use:
 ➔ Integrated Security:
-◆ Azure Functions can be secured with built-in authentication and authorization
-options.
-◆ You can use HTTP triggers to accept GET, POST, or other types of HTTP
+      ◆ Azure Functions can be secured with built-in authentication and authorization
+      options.
+      ◆ You can use HTTP triggers to accept GET, POST, or other types of HTTP
 requests, ensuring that your functions can be securely accessed over the web.
 ➔ Create Microservices and Simple APIs:
-◆ You can use Azure Functions to create microservices or lightweight APIs that
+   ◆ You can use Azure Functions to create microservices or lightweight APIs that
 can handle specific tasks, such as processing events or serving HTTP requests.
 ➔ Run Azure Functions on Various Events:
-◆ Time based triggers
-◆ Http req
-TERRAFORM
+      ◆ Time based triggers
+      ◆ Http req
+
+
+TERRAFORM:
 Iaac - when u move from physical world to virtual stuff, there is possible to write code and create
 infrastructure
 ➔ adv : reusability
@@ -1201,6 +1286,7 @@ it to production
 ● Argocd
 ◆ if u change also within 1 or 2 mins..it will overridden whateven in git
 ◆ things are now version control
+
 Q. iaac have 3 tools:
 1. Infrastructure provisioning tools
 2. Configuration management tools:
@@ -1254,16 +1340,19 @@ Server templating tools: Server templating tools help create pre-configured envi
 quickly set up and manage servers without manual setup.
 ➔ o Vagrant (help to create vm)
 ➔ o Docker (create containers)
+
 Q. What does compliance mean?
 ➔ Compliance means following the rules and regulations set by a country, region, or governing
 body, like
 ◆ USFDA certification or
 ◆ HIPAA for healthcare.
+
 Q. Arm template advantage?
 ➔ Arm template - adv :if its is supported in azure its possible
 ➔ maynot be 100 % for biceps and terraform
 ➔ ARM templates fully support all Azure resources as soon as they are available, but Bicep and
 Terraform might not immediately support 100%.
+
 Q. Practical - Bash.
 ➔ Goal: Installing azure CLI inside the vm
 ➔ Create a vm:
@@ -1314,17 +1403,18 @@ location="centralindia"
 ➔ Should define the provider(cloud)
 ➔ ls -a -after doing terraform init u see a folder ,file
 ➔ terraform init - u will see a file and a folder
-◆ .terraform - download all modules
+      ◆ .terraform - download all modules
 ➔ Internal working:
 ➔ terraform apply (imp command)
-◆ When u execute -work with cloud provider,
-◆ how does it knw which provider has to work with
-● (provider block)
+      ◆ When u execute -work with cloud provider,
+      ◆ how does it knw which provider has to work with
+               ● (provider block)
 ➔ is it possible to work with 2 provider(yes)-generally we dont do
 ➔ providers means provision something
-◆ eg:mamaths,kaffehouse provide us food
+         ◆ eg:mamaths,kaffehouse provide us food
 ➔ terraform init - understand code and dwld the modules associated with that provider
 ➔ Terraform apply - work with module and module work with actual destinations(cloud)
+
 Q. some imp commands:
 ➔ cd .terraform/tab/tab
 ◆ Where the latest provider plugins are downloaded
@@ -1366,10 +1456,12 @@ resources.
 ➔ output this as a file and pass this as parameter to apply
 ➔ You can skip manual approval by using:
 ◆ terraform apply -auto-approve
+
 Q. when all it compares with the 3 things(.tf file,cloud,.tf state file)?
 ➔ Plan
 ➔ Apply
 ➔ destroy
+
 Q. why do we need to create a plan file?
 ➔ Plan file = freeze the changes you reviewed, then safely apply them later.
 ➔ Terraform always compares three things before applying:
@@ -1385,26 +1477,32 @@ When you run terraform plan:
 ○ Avoids surprises if the cloud or code changes in between plan and apply.
 ○ when u create a rg for new ..this is compared with cloud - is it there or not
 ○ if u apply create a state file(terraform.tfstate)
+
 Q. why do u want state file?
 ● Terraform can understand what u have done last time and compare with 3 things
+
 Q. formatting the file and validate ?
 ● formatting the file : terraform fmt
 ● validate: terraform validate
+
 Q. terraform destroy?
 ➔ destroy : terraform destroy (a backup file created internally)
 ➔ analyse and shows - i going to destroy this
 ➔ alternative : delete from main.tf file
+
 Q.Sonarqube?
 ★ Vulnerabilities: SonarQube can detect security vulnerabilities in your code, such as common
 attacks (e.g., SQL injection).
 ★ Code Smells: Refers to bad code practices (not necessarily errors, but things that might cause
 problems later).
 ★ Your Decision: You can accept or fix these issues based on your code quality standards.
+
 Q. Availability Sets in Azure:
 ★ Fault Domain: Group of VMs that share a physical rack. If a hardware failure occurs in that
 rack, the VMs in that fault domain are affected.
 ★ Update Domain: Group of VMs that are updated simultaneously. If there's an update to the
 system, VMs in the same update domain are updated at the same time to avoid downtime.
+
 Q. Practical: goal: creating vm in terraform -doin
 ➔ https://github.com/vilasvarghese/terraform-tutorial/tree/master/azure
 ➔ dns - within the address anyone try to talk with any domain name this will be checked by
@@ -1424,7 +1522,9 @@ respective scope.
 ➔ create a directory
 ➔ get inside
 ➔ create a file
+
 Code:
+
 provider "azurerm" {
 features {}
 }
@@ -1447,6 +1547,7 @@ address_space = ["10.0.0.0/16"]
 ➔ trying to create resource -network resource(imp)
 ➔ destroy - commenting the vnet part and apply
 ➔ or destroy
+
 30/4/25
 Q. init container in kubernetes?
 ➔ Runs before the main container(s).
@@ -1466,10 +1567,11 @@ Replica set = you can horizontally scale
 What does deployment help us to achieve?=rolling update(db manipulation)
 Does Kubernetes support 2 updates? Complete replacement and rolling update(whenever u update,one
 more entry of replica set created and previous one deleted)
+
 Q. creating vm in terraform.
 ➔ Written code inside a folder tf-test
 ➔ Check out the documentation
-➔ azurerm_linux_virtual_machine | Resources | hashicorp/azurerm | Terraform | Terraform
+➔ link: azurerm_linux_virtual_machine | Resources | hashicorp/azurerm | Terraform | Terraform
 Registry
 ➔ Search virtual machine(azurerm_linux_virtual_machine)
 ➔ Copy paste the code and edit
@@ -1488,16 +1590,19 @@ public ip(create new public ip)
 ➔ Try to connect using public ip
 ➔ Ssh -i id_rsa azureuser@publicip
 ➔ Path need to converted into reference of the file
+
 Q. policy of code?
 ➔ Can create policies in terraform which dont allow us to do certain things.
 ➔ Can see logs who did the things(monitor part)
 ➔ Lock the rg
 ➔ U need to do code acc to policies
+
 Q. adv of ci/cd in terraform?
 ➔ Continuous,automated
 ➔ Version control
 ➔ Improves security
 ➔ Only problem of terraform : need to track the code
+
 Q. file -Terraform advanced in github.com/vilasvarghese/terraform/Terraformadvanced.txt.
 Q. require_provider:Minor version,Major version and patch?
 ➔ ~> = minor version that can be upgraded
@@ -1519,6 +1624,7 @@ Q. require_provider:Minor version,Major version and patch?
 ➔ terraform-tutorial/azure/01_1ResourceGroup/main.tf at master · vilasvarghese/terraform-tutorial
 ➔ Terraform =work with modules
 ➔ In aws= no terraform block,azure=terraform block
+
 Q. problem with managing state file?
 ➔ .tf file = monitoring the changes
 ➔ Whenever u change = in ur local machine,friend does not have that .tf file,in local machine there
