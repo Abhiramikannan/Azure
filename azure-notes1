@@ -86,16 +86,19 @@ Ans:
 ● 🤝 Best if you are working across different cloud providers
 ● 🛠 More flexible – can connect to other tools like Vault, Consul
 ● 🌐 Great for companies who don't want to be locked into one cloud
+
 4. Azure Portal
 ● 👀 Graphical interface (UI) – no coding
 ● 👍 Easy for beginners or one-time tasks
 ● 🕐 Not great for repeatable or large-scale automation
 ● ⚠️ May lack consistency and take more time
+
 Q. Virtualization?
 ★ Multiple VMs run on a single physical machine.
 ★ Each vm have its own OS,CPU,RAM,Disk,Network.
 ★ Each VM is isolated – one tenant cannot access another’s data
 ★ Helps in cost reduction and efficient resource utilization
+
 Q. Multi-Tenancy?
 ★ One physical server is shared by many customers, but securely isolated.
 ★ 1 vm can be used by multiple users
@@ -109,6 +112,15 @@ Q. How does IaaS work?
 ★ IaaS (Infrastructure as a Service) provides virtual infrastructure (like VMs, storage,
 network) but you manage everything above it — like the OS, middleware, and
 applications.
+
+What You Need to Maintain in IaaS:
+   OS	✅ Your Responsibility	You install, update, patch Linux/Windows
+   Middleware	✅ Your Responsibility	e.g., Apache Tomcat – you install and upgrade
+   Runtime	✅ Your Responsibility	e.g., Java, .NET – setup and manage
+   Application & Data	✅ Your Responsibility	You write code, deploy app, and handle data
+
+
+
 ★ Data - data inside services (like VMs) is not automatically persisted.
 ★ Services are mostly stateless(wont persist data). Why?
 ★ To enable scalability — easily add/remove instances without losing data.
@@ -511,6 +523,7 @@ Note:
 ➔ Then try to connect using ssh to frontend
 ➔ After connection,connect to backend from frontend using privateip of backend
 ➔ After that try to connect to private
+
 Q. communication happen in public domain encrypted or not?
 ➔ Yes ., communication in the public domain is encrypted, if you're using secure protocols.
 ➔ Ssh - encrypted using pem file
@@ -519,12 +532,14 @@ Q. communication happen in public domain encrypted or not?
 internet.’
 ➔ So yes, communication is encrypted in the public domain if you're using the right
 protocols like HTTPS or SSH.
+
 Q. BGP?- Border Gateway Protocol
 ➔ BGP is a routing protocol used to exchange routing info between different networks
 ➔ Finds best path
 ➔ Azure uses BGP for hybrid networking, like when connecting your on-premise network to
 Azure using VPN Gateway or ExpressRoute.
 ➔ Protocol runs the internet
+
 24/4/25
 Q. How did you create a user in our azure platform?
 ➔ tried to create user -> entraid -> manage in side ->users -> add user =failed
@@ -536,17 +551,20 @@ Q. How did you create a user in our azure platform?
 ◆ assigned roles -add assignment - user administrator- adding
 ➔ Then we created a user =worked
 ➔ Only group administrator have access(yes)
+
 Q. what u have done to give permissions to the user?
 ➔ The user can be added to the Azuregroup(created by sir)
 ➔ Sir created an Azure group and added all of us into it
 ➔ The Azuregroup contains all the subscriptions we need
 ➔ Users in the group can access resources under that subscription.
+
 Q. After creating user what u have done ?
 ➔ After creating the user you can login to the user
 ➔ Here in Entra id ->group ->azure group -> members = u can see the user(you created)
 ➔ but cant add members - because no permision for this user(newly created user)
 ➔ The new user cannot add more members to the group unless explicitly given Group
 Owner or Admin roles.
+
 Q. How to attach a user to a subscription in Azure?
 ➔ in subscription u r associating user to role
 ➔ Search subscriptions
@@ -558,24 +576,59 @@ the user needs)
 ➔ Assign access to → User, group, or service principal
 ➔ Select → Type and select the user you want to give access
 ➔ The user now has access to that subscription based on the role.
+
 Q. How do you create Resource Group in Azure?
 ➔ Search for Resource group
 ➔ Create
 ➔ Select subscription
 ➔ Select region
 ➔ create
+
 Q. how do you create vm in the resource group you created?
 ➔ Select the resource group that u created
+
 Q. How do you request quota for the region you are working with?
 ➔ You can request the quota
 ➔ Subscription - mml - settings -usage+quota -select region and request
+
 Q. Why NFR is mostly handled by saas?
 ➔ SaaS is like renting a fully serviced apartment — you just move in and live, while the owner
 handles the electricity, plumbing, security, and maintenance.
 ➔ The provider is responsible for NFR
 ➔ Scalability,Availability,Security,Performance,Disaster Recovery,Compliance
+
 Q. Challenges of public cloud?
+Compliance :
+   Following rules/laws for data storage (e.g., GDPR, HIPAA).
+Vendor Lock-In :
+   Getting stuck with one cloud provider because switching is hard.
+Cost Management :
+   Costs can increase quickly if you don't monitor or control usage.
+Integration Issues:
+   Difficult to connect old systems (on-premises) with cloud systems.
+Security Concerns:
+   Data is stored outside your system, so it needs strong protection (like IAM, firewalls).
+Limited Control:
+   You don't get full control over the hardware or some advanced configurations.
+Performance & Latency:
+   Might be slow for real-time tasks if data centers are far (without edge computing).
+
 Q. uses of public cloud?
+Storage :
+ Save data like files or backups on the cloud.
+Website Hosting :
+ Host your website without worrying about servers.
+Data Analytics :
+ Analyze large amounts of data with cloud tools.
+Disaster Recovery :
+ Backup your data on the cloud, so you can recover if things go wrong.
+SaaS (Software as a Service) :
+ Use software online, like Google Docs, without installing it.
+Development & Testing :
+ Build and test apps on the cloud, so you don't need a lot of hardware.
+Big Data & AI :
+ Do complex calculations or train AI models without owning big computers.
+
 Q. Azure Global Infrastructure?
 Azure Global Infrastructure refers to the complete network of
 ➔ data centers,
@@ -608,8 +661,24 @@ Q. Key aspects of cloud region?
 ◆ One region doesn't affect the other if something fails — safe and independent.
 ➔ Low Latency:
 ◆ Closer region = faster response time (less delay in getting your data).
+
 Q. Benefits of Cloud Regions?
+Benefit	What it Means
+Disaster Recovery	:
+     Run data across regions (active-active or active-passive) to avoid data loss.
+Scalability	:
+     Can easily scale resources within a region based on your needs.
+Data Sovereignty & Compliance	:
+     Store data in specific regions to meet legal and compliance rules.
+
 Q. Characteristics of Availability Zones?
+Low Latency:
+  Faster access to services and applications because they're closer to users.
+Redundancy	:
+   If one zone fails, another will take over — ensuring uptime.
+Fault Domain:
+  Each zone is isolated, so failures in one won't affect others.
+
 Q. Key Characteristics of Azure Cloud Data Centers?
 ➔ Security: Strict physical & logical security controls to protect your data.
 ➔ Connectivity:
@@ -2514,6 +2583,7 @@ Q. inplace update - without destroying,update
 ➔ An in-place update with Terraform means applying a change without destroying and
 recreating the resource—Terraform will just update the existing infrastructure (e.g.,
 changing tags, VM size, or password).
+
 terraform {
 required_providers {
  azurerm = {
@@ -2737,17 +2807,49 @@ i. These are the values you pass into the Terraform code.
 b. Local Values:
 i. You use them when you want to store a value once and use it many
 times, just within that file.
-1. locals {
-2. rg_name = "abhi-resourcegroup"
-3. location = "eastus"
-4. }
+ locals {
+ rg_name = "abhi-resourcegroup"
+ location = "eastus"
+ }
 5. Can use like this inside the block …
+resource "azurerm_resource_group" "example" {
+  name     = local.rg_name
+  location = local.location
+}
+
+resource "azurerm_storage_account" "example" {
+  name                     = "abhi123storage"
+  resource_group_name      = local.rg_name
+  location                 = local.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+
 c. Output Variables
 i. Values that you want to use in other files or show after apply.
-ii.
-iii.
-iv.
-v.
+ output "vm_name" {
+  value = azurerm_linux_virtual_machine.vm.name
+}
+ii.Example:
+You created a resource group:
+resource "azurerm_resource_group" "example" {
+  name     = "abhi-rg"
+  location = "eastus"
+}
+Now you want to display the name of the resource group after applying.
+iii.Add this output variable:
+output "rg_name" {
+  value = azurerm_resource_group.example.name
+}
+When you run:
+terraform apply
+
+You'll see:
+Outputs:
+
+rg_name = "abhi-rg"
+
 6. Important Terraform Commands:
 a. Refresh-Only Apply
 i. Use when you want to update the state without making changes.
