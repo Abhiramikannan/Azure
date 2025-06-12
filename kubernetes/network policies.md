@@ -20,4 +20,6 @@ network policies:
 
         after getting into container execute the wget =wont work
 
-        ![image](https://github.com/user-attachments/assets/0c573a6d-1fd7-4556-9baf-d80908dfc180)
+
+![image](https://github.com/user-attachments/assets/6dba7098-d1d5-460e-84b2-ffd3c5c9499b)
+
