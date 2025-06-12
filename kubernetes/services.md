@@ -40,3 +40,15 @@ Browser or external client can access via NodeIP:nodePort (ensure firewall/secur
       Allows consolidation of load balancer resources by managing multiple services behind one external IP.
 
    ![image](https://github.com/user-attachments/assets/8c04d6f0-b5bf-42d6-9a3f-9d824977d13c)
+
+5. REVERSE PROXY:
+Nginx: Reverse Proxy
+Used inside company networks with many backend servers.
+
+Acts as a traffic transmitter — forwards client requests to appropriate servers.
+
+Performs SSL termination (decrypts HTTPS requests before passing them on).
+
+Works with Ingress rules:
+
+Receives requests, matches them to ingress paths/rules, then routes accordingly.
