@@ -42,13 +42,16 @@ Browser or external client can access via NodeIP:nodePort (ensure firewall/secur
    ![image](https://github.com/user-attachments/assets/8c04d6f0-b5bf-42d6-9a3f-9d824977d13c)
 
 5. REVERSE PROXY:
-Nginx: Reverse Proxy
-Used inside company networks with many backend servers.
+   
+    Nginx: Reverse Proxy
+   
+    Used inside company networks with many backend servers.
+    Acts as a traffic transmitter — forwards client requests to appropriate servers.
+    Performs SSL termination (decrypts HTTPS requests before passing them on).
+    Works with Ingress rules:
+    Receives requests, matches them to ingress paths/rules, then routes accordingly.
 
-Acts as a traffic transmitter — forwards client requests to appropriate servers.
-
-Performs SSL termination (decrypts HTTPS requests before passing them on).
-
-Works with Ingress rules:
-
-Receives requests, matches them to ingress paths/rules, then routes accordingly.
+6. Internal Load Balancer in Kubernetes:
+   
+      Regardless of service type (ClusterIP, NodePort, LoadBalancer), the internal load balancing within the cluster is always done by the ClusterIP service.
+      So, traffic distribution inside the cluster happens via ClusterIP, no matter how the service is exposed externally.
