@@ -1,0 +1,103 @@
+pipeline:
+
+
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+ 
+trigger:
+- master
+ 
+resources:
+- repo: self
+ 
+variables:
+   
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '65096b1c-7aac-464d-836c-145518d4fd69'
+  imageRepository: 'aksdeploy'
+  containerRegistry: 'abhiregistry.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'abhiregistrye077-auth'
+ 
+  # Agent VM image name
+  vmImageName: 'abhi-vm'
+ 
+ 
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      name: abhipool
+      vmImage: $(vmImageName)
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          sudo apt update
+          sudo apt install -y maven
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+ 
+    - upload: manifests
+      artifact: manifests
+ 
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+ 
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      name: abhipool
+      vmImage: $(vmImageName)
+    environment: 'aksdeploy-4299.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+ 
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              rolloutStatusTimeout: '300' 
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+ 
