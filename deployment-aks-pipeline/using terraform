@@ -1,0 +1,69 @@
+pipeline:
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+ 
+trigger:
+- master
+ 
+pool:
+  vmImage: abhi-vm
+  name: abhipool
+ 
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'MML(bf7e75db-e819-49ca-b6d2-69c32a2353fe)'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        cd aks-terraform
+        terraform init
+        terraform plan -var "subscription_id=bf7e75db-e819-49ca-b6d2-69c32a2353fe" -out=tfplan
+        terraform apply
+
+
+code:
+  this code i have done inside a folder:aks-terraform ,filename: main.tf
+provider "azurerm" {
+  features {}
+  subscription_id = var.subscription_id
+  
+}
+ 
+variable "subscription_id" {
+  description = "The Azure Subscription ID"
+  type        = string
+}
+ 
+# Reference existing Resource Group instead of creating one
+data "azurerm_resource_group" "aks_rg" {
+  name = "abhi-rg-12"
+}
+ 
+# AKS Cluster
+resource "azurerm_kubernetes_cluster" "aks_cluster" {
+  name                = "abhi-terraform-cluster"
+  location            = data.azurerm_resource_group.aks_rg.location
+  resource_group_name = data.azurerm_resource_group.aks_rg.name
+  dns_prefix          = "myaks"
+ 
+  default_node_pool {
+    name       = "default"
+    node_count = 1
+    vm_size    = "Standard_B2s"
+  }
+ 
+  identity {
+    type = "SystemAssigned"
+  }
+ 
+  network_profile {
+    network_plugin = "azure"
+  }
+ 
+  tags = {
+    environment = "dev"
+  }
+}
