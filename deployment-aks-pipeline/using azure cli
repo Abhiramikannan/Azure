@@ -1,3 +1,9 @@
+what doing here:
+ Compile Java with Maven, build and push Docker image to ACR
+ Create Kubernetes secret for ACR, deploy manifest to AKS cluster
+
+
+
 pipeline:
 
 
