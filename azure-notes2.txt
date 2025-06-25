@@ -1,0 +1,1279 @@
+services:
+
+clusterip:
+    within the cluster(ip address of cluster ip and port) -port of clusterip also same or not 
+        if not give clusterip port number
+    2ports:
+        cluster ip port - port 
+        target port :port on the application
+    if target port and port are same:
+                dont mention target port 
+                mention only one
+    selector:
+        internally it will forward req to pod which has the label 
+        relation ship only b/w selector and label
+        if inside kubernetes cluster:
+            curl clusterip:port 
+                    works
+    try adding target port:
+        8080
+        nginx listening to 80
+        curl clusterip - wont work
+        need to give clusterip port(nammde roominte chaavi thanne venm)
+node port:
+    outside the kubernetes cluster but inside ur cluster(vnet)
+    in 10 machines  
+        every machines that port number is reserved for that service
+    3 ports:
+        nodeport
+        clusterip port
+        target port
+    nordport mentioning -not mandatory
+    port -mandatory
+    mention type -otherwise default is clusterip
+    internally created clusterip(apply -f)
+    browser: ip address:nordport(allow security group)
+            edit inbound -destination:31000(Port)
+loadbalancer:
+    do service discovery
+    distribute req to diff machines
+    get the external ip
+    outside ust peoples also get 
+    same as nordport
+        diff :type - loadbalancer
+        forward load to nordport
+    nodeport created from load balancer
+            ip:port of nodeport
+    prblm:
+        each service have sep loadbalancer
+        actually we dont want it
+    solution:
+        ingress
+            path based routing -/login/somethg
+             practical:
+                create ingress rules and forward traffic
+                whenever i give path:/ it forward to the port of service 
+                internal ip: nodeport ip
+                public ip: 
+
+nginx: reverse proxy:
+                inside my company-lot of servers -reverse proxy will transmit the traffic
+                ssl termination
+                pick up req from us and look ingress rules and do
+
+imp:
+internal loadbalancer  
+    whether it is clusterip/nodeport/loadbalancer
+             always done by clusterip
+
+
+network policies: 
+    who can talk to whom
+
+    egress:
+    whom can i talk to
+
+    pod selector:
+    app: hello
+
+    ingress:
+        -from:
+            app:foo 
+                means the foo can only talk to hello (anythg else try wont work)
+
+        after getting into container execute the wget =wont work
+
+azure:
+allocate routable ip address to a service
+
+fleet manager:
+    when u want multiple kubernetes cluster
+
+burstable nodes:
+    dlte nodes when its not used
+
+container registry:
+Acr:
+    like dockerhub
+
+sidecar container:
+    take care of certficate manager
+
+istio:
+    change certificate
+    launching its own sep pod
+    rotate certficate
+    used for routing
+
+c group:
+    linux kernal features
+    capture all matrix details
+    configure prometheous(simple output)
+    configure grafana from prometheous
+    promethous can read the data and there should be a port number
+    when u go to port num=everything displayed
+    u can feed them in grafana
+    it can help in visualizing
+    pre created repos -deploy that iself -grafana standarad modifying
+
+azure key vault:
+
+13/5/25
+
+when u hit hdfc bank..https checks are u valid user or not
+    this process is 3 way handshake
+encoding:
+    use algorithm
+encryption:
+    use keys
+    symmetric key:
+         same key for    
+            encrypt and decrypt
+
+    assymetric keys:
+         bank gives public key and u can encrypt 
+            but u cant decrypt using that key
+                 decrypt using private key(only with bank)
+
+               problem: 
+                    how will u dwld the public key -chances of man in the middle attack
+                solution::
+                    cerificate authority
+                        they will look the certificate and validate
+                problem:
+                    talking to ca also talking to intermediate peoples..so it will not solve my prblm.
+                solution:
+                    all validated certificate preinstalled on ur browser
+
+this is happening in case of:
+                azure
+                kubernetes
+                microservice to microservice(istio(certificate management tool) helps-sidecar interupts the req and )
+            
+sidecar:
+    ur main car should not be blocked (http not https)
+
+design patterns:
+    proven solution to common design problems
+        eg: sidecar
+            gang of four design patterns
+            chain of responsibility
+            strangler pattern
+        problem:
+            choosing the right design pattern-solution
+while designing microservice:
+       look upon business logic of microservice
+       dapr -solved the problem of load balancing
+
+internals of kubernetes service:
+    container to container in same pod:
+                     linux kernal capability -local host
+                     u can create a network space
+                     allocate proccess to that network space 
+    2 containers in 2 diff pods in same machine: (ip address)
+                    bridge-custom bride()
+                    all the containers are connected to the custom brridge
+                    bridge-(switch)-broadcast -use handshake signal and get mac address
+
+    2 containers in 2 diff pods in 2 diff machines:
+            communictn comes to bridge
+            once it comes here it knows its not in cidr range
+            goes to default root of custom bridge
+                that has a default root that take to network plugin(waeve)
+                this will take somehow ur msg to right machine 
+                that machine also a cbr here
+                that brings the msg to that container 
+                each plugin is frree to implement in their own ways
+        
+    container to service:
+        when u hit the service ip
+            it is able to identfify pods in cluter ip
+        req will come to cbr
+        kubeproxy will pock a rule in the ip tables
+            any communication on ths ip address and sent to me (proxy)
+            proxy on each node talking to api server and get the list of pods asscociated with services
+            what all the pods asscociated with service already in etcd. 
+        do the load balancing.how?
+        there is a constant communication b/w worker nodes and master
+        kubeproxy will continuous get the pods asociated with  the services
+        describe service to see end points
+        end points(pod ip): ip address associated with services
+                    change the to address to that of the clusterip(pod)ip address
+                    sent it back to cbr
+                    if a new pod comes up, if pod crashes -ip address removed from end point 
+                    load balancing done by kubeproxy(b/w serveral instance of service done by kubeproxy)
+                    kubelet sent the data to api server
+        kublet continuousely run on all nodes..kublet on each node give info to api server and to etcd 
+        all the kubeproxy in all nodes have same information 
+        kubeproxy knows:
+            pods and ip address associated to the services
+        change denating
+            cluster ip address chnage to pods ip address
+        then comes to custom bridge
+
+
+
+
+    kubelet is the only service part of the architecture
+    kubectl -client to talk to api server
+
+
+RBAC:
+    subjects:
+        user
+        group
+        service account 
+
+network policies:
+
+aim:
+try to create a cluster and attach to ACR (like docker hub)
+
+ans:
+    created cluster
+    vm create 
+
+az vm create --resource-group abhi-rg  --name abhi-vm --image Ubuntu2204--size Standard_B1s --admin-username abhi --assign-identity --generate-ssh-keys --public-ip-sku Standard
+ 
+get inside vm:
+    run project of prasanth and pull to acr registry
+
+     1 systemctl ststus docker
+
+  2 systemctl status docker
+
+  3 docker pull nginx
+ 
+  4 docker login yogeshcont.azurecr.io  ==in azure container registry =accesskeys -username and password there
+
+  5 docker tag nginx yogeshcont.azurecr.io/yognginx 
+
+  6 docker push yogeshcont.azurecr.io/yognginx
+
+  7 docker images
+
+  8 history
+
+    give credentials
+  push then come to kubernetes cluster:
+  in container-registry->overview->command->push an image->
+    kubectl run abhipod --image=abhicontainerregistry.azurecr.io/abhi-container/hello-world
+pod/abhipod created =imagecrashhbackoff
+
+pull nginx image and push
+create pod
+    try to clone the hello-world -inside vm
+
+aim:
+    try to attach volume into ur aks
+
+machine ->1 container->data in volume -in docker
+
+pod created attach into storage acc files
+    using common extrnal file storage
+    if pods are crashing-> data is safe
+
+when we use this -we use a technology -storage classes
+                                                from where the pv should come
+                                                reclaimpolicy:Delete -> remove data and object when pv (refer)
+kubernetes volumes:
+    pv and pvc to mount the volume
+    pvc and pv have 1-1 relationship
+    once bound, entire pv is for pvc
+    pvc is created by developer -tightly bound to pod -pod doesnt knw pv 
+    pv is namespaced base
+    pv:
+        mention where is getting stored
+    this type of allocation is called static provisioning.
+    1 more type of provisioning- dynamic 
+                                        create storage class
+                                        how will the pv comes up -we say here
+                                        when u create pvc -automatically create pv of that size
+link: https://learn.microsoft.com/en-us/azure/aks/azure-csi-files-storage-provision 
+created pod -mounted the same volume
+got inside pod
+    cd /mnt/azure/
+   1 ls
+   2 mkdir ust
+   3 cd ust
+   4 echo "volumes are working" >> vol.txt
+   
+   go into ur portal -> go to ur storage acc just created-> fileshares->the folder ust came here
+
+provisioner create a pv automatically 
+
+for bounting 3 conditions:
+    req storage by pvc <=pv size
+    storage class name in pv =pvc
+    access mode =same
+
+
+14/5/2025
+aim: to deploy a microservice springboot application
+create kubernetes cluster
+attach registry
+create sql server
+create vm
+    install docker
+    sql server ->network settings-> save-> add vnet -> add ipv4 -> 10.0.0.0 -10.255.255.255
+
+    clone the repo : https://github.com/KPkm25/Customer-App-React.git
+    clone customer-app repo..inside that repo -build dockerfile by chaning the file
+            install az: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+            commands: in ur container registry: push an image
+                        az login
+            create sql database 
+                    add private end point
+                databse - settings -connection string -jdbc -copy code in a file 
+            install: 
+                echo "Installing npm..."
+                sudo apt install -y npm
+                
+                # Install OpenJDK 11
+                echo "Installing OpenJDK 11..."
+                sudo apt install -y openjdk-11-jdk-headless
+                
+                # Install Maven
+                echo "Installing Maven..."
+                sudo apt install -y maven
+                
+                # Install Docker using the official script
+                echo "Installing Docker..."
+                curl -fsSL https://get.docker.com -o get-docker.sh
+                sudo sh get-docker.sh
+
+    and create image
+        docker build -t abhicontainerregistry.azurecr.io/customerapp:latest .
+    push:
+         docker push abhicontainerregistry.azurecr.io/customerApp:latest
+    kubernetes:
+        create deployment
+        chack working
+    react:
+        npm install
+        npm run build
+
+    create image of react
+            spring boot
+            push in acr 
+
+java 
+build an artifact ,create image from that artifact
+
+
+commands:
+    npm run build
+   67  ls
+   68  cd Customer
+   69  cd CustomerApp/
+   70  ls
+   71  cd src/main/resources/
+   72  ls
+   73  nano application.properties 
+   74  cd ../.. 
+   75  cd ..
+   76  ls
+   77  docker build -t abhicontainerregistry.azurecr.io/customerapp:latest .
+   78  docker push abhicontainerregistry.azurecr.io/customerapp:latest
+   79  az login
+   80  az acr login --name abhicontainerregistry
+   81  docker push abhicontainerregistry.azurecr.io/customerapp:latest
+   82  ls
+   83  cd
+   84  cd /home/abhi/Customer-App-React/
+   85  ls
+   86  nano src/services/CustomerServices.js 
+   87  npm run build
+   88  docker build -t abhicontainerregistry.azurecr.io/customerapp-react:latest .
+   89  docker push abhicontainerregistry.azurecr.io/customerapp-react:latest
+   90  history
+
+
+   get:
+    http://74.224.103.188/api/customers/
+
+14/5/25
+personal:
+aim:
+    "We are deploying the frontend and backend in AKS,
+     and using VNet Peering to let the backend securely talk to Azure SQL DB 
+     over private Azure backbone without opening SQL DB to the public internet."
+    
+15/5/25
+aim: Monitoring
+    created new rg
+    new vnet
+            added a private subnet while creating vnet
+    nsg added to machines directly -not subnets = we didnt manually done here
+    create a new vm
+        attach public subnet
+        public security grp
+    get inside vm
+        chmod 400 pemfile
+    install docker
+    docker run -d -p 80:80 nginx
+search network watcher:
+
+relative service :
+    same place
+    like that machine in india ip address in america in diff locn=no sense
+
+create 1 more vm using private subnet
+add monitor somethg
+    install docker
+        #!/bin/bash
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+        sudo docker run -d -p 80:80 nginx
+    alert
+    get indise vm and check =docker installed/not
+in network watcher
+    in the machie u use
+create a connection monitor
+    add network plugin =then oonly monitor -instaled on destination
+    source -public subnet
+    destination -private 
+    incomming to source cant be tracked(what someone is talking to me )
+    track only destination(what im hearing)
+
+test configuration:
+    traffic it has to monitor
+    created 
+    vm public to vm pvt (whatever receives tracked)
+
+
+ip flow verify:
+local port:
+    destination
+remote port:
+    source port
+
+    public ip:
+        taking outside the azure- fails -use private ip=works
+    machines have ports
+        0-1024 =restricted ports
+        machine will pick up from 1024 
+
+
+
+16/05/24
+Aci: azure container instances(azure 104)
+     in aws: ecs 
+
+as compared with aks :
+instaed of creating pod =creating containers where u can deploy ur image
+multiple containers go together
+scalability
+load balancing
+
+
+quickstart images:
+    wont work
+    need to give secrets of dockerhub
+
+microsoft manage keys:
+    key : whenever u have encrypt u have to use key
+        symmetric
+        asymmetric
+    in this case azure needs this keys
+    using: to improve the security of data running there
+
+    eg:
+        customer management key: hotel allows customer to have their own key
+        hotel management key: hotel provides and customer wont have trust 
+
+
+
+
+aim:
+    https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-azure-developer-cli?tabs=linux%2Cget%2Cbash%2Cpowershell&pivots=programming-language-powershell
+Create functions in Azure using the Azure Developer CLI | Microsoft Learn
+Learn how to use the Azure Developer CLI (azd) to create resources and deploy the local project to a Flex Consumption plan on Azure.
+ 
+
+ans:
+    You're learning how to create and deploy serverless functions to Azure Functions using the Azure Developer CLI (azd).
+
+
+https://learn.microsoft.com/en-us/azure/azure-functions/create-first-function-azure-developer-cli?pivots=programming-language-java&tabs=linux%2Cget%2Cbash%2Cpowershell
+java we have done
+
+aim:
+    
+    deployed webapp
+        service app
+
+https://learn.microsoft.com/en-us/azure/container-instances/container-instances-multi-container-yaml
+ Why deploy a multi-container group using a YAML file (Azure Container Instances)?
+🔹 Reason:
+To run multiple containers together in one isolated environment (Container Group) that can talk to each other, using a single YAML definition.
+container instance vs webapp vs functionapp
+
+
+aim:
+    create a custom role
+why u r creating?
+
+what is cstom role?
+
+
+subscription ->access control ->add ->customrole
+
+What is a Custom Role in Azure?
+    A custom role is a user-defined role where you specify:
+    Actions allowed (like Microsoft.Compute/virtualMachines/start/action)
+    Actions denied (optional)
+    Assignable scope (which subscription/resource group it applies to)
+    It's basically:
+    "I want this person to do THIS, and only THIS."
+
+
+Why are you creating a custom role?
+    Built-in roles (like Contributor, Reader, Owner) might give too much or too little access.
+    You want to give exact permissions needed for a specific task.
+
+Example:
+→ Allow user to only start/stop VMs, but not delete them.
+→ Built-in roles don't give such fine control.
+
+ So, custom roles = Granular & Controlled Access.
+
+
+ practical:
+    subscription ->access control ->add ->customrole -> clone a role ->Contributor
+    to give access ->add peermissions on top
+    assign roles ->add role assignment 
+
+
+
+
+creating vm with backup:
+
+create vm and enabled backup and gave custom data for install docker(recovery service vault)
+or
+with json file we can create everything using azure client
+
+or
+    create recovery service vault
+        deny public access 
+            azure backup
+
+manage - backup policies -add - create policy
+our vault - settings -backup -configure backup
+
+what i have done here:
+    in the recovery service vault
+            abhi-vault ->backup now
+            
+
+
+replication services:
+do by myown:
+replication
+    disater recovery
+
+
+
+19/5/25
+
+ASG: Application Security Group
+as machine increases 
+        update the rules manually -not possible
+
+create ASG -associate ASG with nics 
+        whwre u permit machines only have access only talk
+created insted of nsg ,so we dont need to set every machines the rules into nsg
+
+
+practical:
+    create vnet
+        give 3 subnet -2 private
+                        1 public
+    create vm in each subnet
+    create nsg and attach to vm
+
+    check what are the nsg associated with subnets?
+        vnet->settings->subnets
+    done: dlte all vm
+    create vm associated with subnet
+   done: nsg->settings->subnets->associate 
+   done: create vm  and while attaching security grp it will show: selected nsg already associated with the subnet
+
+
+   vm-> nic ->
+   nsg->attached to vnet not in vm ?
+    vm->network settings ->view topology
+
+connect to vm1
+exit 
+
+remove port 22 connection
+vm->nwrk settings -> rule
+
+try connecting:
+    cant connect to vm1
+
+go to vm2
+    check nsg rules: 
+
+
+machine 1 to machine 2 conection works
+
+create asg1,2
+atach the asg to vm1 and vm2(vm1 ->asg->attach)(vm2-asg-attach)
+nsg->create security rule
+
+block all vnet ->security rule on vm2->servicetag->vnet->destinationport range=*,deny ->try to connect to vm2 frm vm1 ->wont work
+create asg inbound security rule-> destination:22,80,8080,443 -allow,3998->connnect-work
+what we  are doing here:
+    when we need to allow only particular machines to talk to other machines
+    create ASG..so the vm associated with tht ASG can only talk
+
+vm1 have asg..which allow to talk to vm2
+vm2 have asg2 which allow to talk to vm3
+
+try to connect with 3 to 2 =wont work= 3 dont have asg and in 2 we didnt set any rule(only rule asg1 can talk)
+
+
+connected to vm2:
+    vm2 ->nsg-> inbound rules->destination:22,80,8080,443 -allow,3998->connnect-work
+    it allows evrythg from asg in vm1 to vm2
+
+pemfile moving to vm:
+    scp -i abhi-vm1_key.pem abhi-vm2_key.pem abhi@4.188.75.226:/home/abhi
+
+
+
+FIREWALL:
+link:
+    https://learn.microsoft.com/en-us/azure/firewall/tutorial-hybrid-portal
+    
+    while creating vnet enable firewall in security =created vnet
+    create a new vm and default subnet
+            inbount port rules :none 
+            public ip: none 
+            create
+    resourcegrp->firewall u created-> private ip=note public and private ip
+
+nsg rules are statefull:
+        when u make an inbound connection,default allow outbound connection
+        when u make 80,response is ok
+        somebody can come frm the door,and ok to go back
+        incomming req allowed,response?(ok if stateful)
+firewall rules are not stateful:
+    outbound is required in stateless
+
+search route table:
+    create + 
+ur routetable->settings->subnets->associate
+route->ip address->0.0.0.0/0->virtual appliance->next hop address=prv ip of firewall
+next hop address = priv ip of firewall
+rule:allow to respond to whom (route)- 3 way handshaking rule
+     create a default root of 0.0.0.0/0 -so anyone can?
+
+this is at vnet level
+
+go to firewall->settings->rules->application rule collection->add 
+
+firewall can define rules in multiple layers:
+        application layer:
+        network layer:
+
+created application rule: to talk to external machine
+                    allow me to talk to google.com but should add dns(network rule)
+
+create network rule: for dns
+        udp
+        10.0.0.0/24:source =the subnet range and this should be same(everybody can talk to these 2 machines-dns)
+        209.244.0.3,209.244.0.4:destination=dns
+        53=destination Port
+        Add
+
+nat rule: for rdb
+    Protocol:TCP
+    source:*
+    Destination Addre:4.213.32.56(public ip of firewall)
+    Destination Ports:22
+    Translated address:10.0.0.4(priv ip of vm)
+    Translated port:22
+
+try to connect to public ip of firewall:
+    ssh -i abhi-vm_key\ \(2\).pem azureuser@4.213.32.56 =worked
+
+try to curl inside vm:
+    curl https://www.google.com  =worked
+
+
+
+default root->firewall(80)->vm(3389) =we can talk
+rdb =3389 =blocked in ust->cant talk
+    created a linux machine and mke to talk using 22 port 
+realised:
+    target (destination/firewall) set to 80
+    80 of firewall forward to 3389 of vm
+u cant talk to application without dns,->so created network rule
+nat rule: for allow remote desktop  
+
+
+firewall also create a subnet
+ensured vm is connected to same default vnet and subnet
+
+rdb:
+    https://learn.microsoft.com/en-us/azure/firewall/tutorial-hybrid-portal
+
+ DNS ZONe:
+    private DNS ZONe
+        vnet links =addd vnets(multiple)
+    map ur A record -> access within that vnet
+vm = curl the domain name
+Add record set -india -cname record(mapping domain to domain)=not for appex domain(root domain)
+A-ipv4
+map ip to any resource(eg:load balancer) = A record to alias
+domain name :
+sub domain i can have any name(india.projectx.com)
+
+
+seminar:
+conditional acces -login only frm india
+entra id portal(users,groups)
+authentication,authrization,mfa,RBAC
+
+
+AKS -my topic
+
+PROVISIONER:
+remote executions:
+    terraform provisioner feature
+    similar to custom data
+    custom data is the azures cloud provider feature
+
+    link: https://github.com/vilasvarghese/terraform-tutorial/blob/master/azure/23_provisioner/main.tf
+not happening in the control of terraform
+so dont use provisioners
+remote-exec: Executes commands inside your VM (or any remote resource you’re managing, like a virtual machine or server).
+
+local exec:
+local-exec: Executes commands on your local machine (the machine where Terraform is running).
+    do the remote executions
+    file will be in locally
+    should be available in cloud shell
+    link: https://github.com/vilasvarghese/terraform-tutorial/tree/master/3k_provisioner
+
+    only use these lines in the above code:
+     provisioner "local-exec" {
+    command = "sudo echo ${self.private_ip} >> private_ips.txt"
+     }
+
+BICEPS:
+    go to vm u created
+    under automatiom->export templates-> dwld all 3 
+    link: https://github.com/vilasvarghese/azure/tree/master/bicep
+
+     az bicep install
+     az bicep upgrade
+     az bicep version
+     write code and save
+     az deployment group create --resource-group=abhi-resources --template-file storageAcc.bicep --mode complete
+     
+parameters:
+    reusability
+
+complete:
+    dlted all rg and created
+incremental :
+    only what u r saying touched
+
+
+afternoon:
+https://entra.microsoft.com/#view/Microsoft_AAD_IAM/GroupsManagementMenuBlade/~/Overview/menuId/AllGroups
+
+Azure update manager:
+
+
+key vault from azure cli:
+    confidential
+    to access: rbac or identities
+    
+making created vm to talk to keyvault:
+    az vm identity assign --name abhivm --resource-group abhi-rg 
+
+
+link: https://blog.gitguardian.com/how-to-handle-secrets-with-azure-key-vault/
+
+Azure devops organisation:
+
+azure file aait integrate cheythapo api serverne
+    pods created 
+
+21/5/25
+bulk users:
+conditional access:
+Azure site recovery:
+    help u to recover to mirror
+
+today practical:
+az group create --name abhi1 --location centralindia
+az group create --name abhi2 --location southindia
+
+az network vnet create \
+  --name abhi-vnet \
+  --resource-group abhi1 \
+  --location centralindia \
+  --address-prefixes 10.0.0.0/16
+
+az network vnet create   --name abhi-vnet   --resource-group abhi1   --location centralindia   --address-prefixes 10.0.0.0/16
+az network vnet create   --name abhi-vnet1   --resource-group abhi2   --location southindia   --address-prefixes 10.1.0.0/16
+
+az vm create \
+  --resource-group abhi1 \
+  --name abhi-vm \
+  --image Ubuntu2204 \
+  --size Standard_B1s \
+  --admin-username abhiuser \
+  --generate-ssh-keys \
+  --vnet-name abhi-vnet \
+  --location centralindia
+
+didnt worked:
+az vm create \
+  --resource-group abhi2 \
+  --name abhi-vm1 \
+  --image Ubuntu2204 \
+  --size Standard_B1s \
+  --admin-username abhiuser \
+  --generate-ssh-keys \
+  --vnet-name abhi-vnet1 \
+  --location southindia
+
+created subnet manually:
+az network vnet subnet create \
+  --resource-group abhi2 \
+  --vnet-name abhi-vnet1 \
+  --name abhi-vm1subnet \
+  --address-prefix 10.1.0.0/24
+
+created vm:
+az vm create \
+  --resource-group abhi2 \
+  --name abhi-vm1 \
+  --image Ubuntu2204 \
+  --size Standard_B1s \
+  --admin-username abhiuser \
+  --generate-ssh-keys \
+  --vnet-name abhi-vnet1 \
+  --subnet abhi-vm1subnet \
+  --location southindia
+
+go into vm1:
+    install docker
+    bring container nginx
+
+created a service recovery vault for destination location(southindia)
+abhi-vault->site recovery->enable replication
+source:centralindia
+target:southindia
+protected items->replicated items: see vm in centralindia
+
+22/5/2025
+Recovery point objective:
+    okay to loosse a certain amount of data at the recovery point 
+
+vpn:
+    encrypt the data using vpn
+vpn gateway:
+    to enter 
+point to point repeat connextion:
+site to site vpn:
+
+link:
+    https://learn.microsoft.com/en-us/azure/firewall/tutorial-firewall-deploy-portal
+
+created rg 
+created vnet->enabled firewall
+ give 80 for Destination Ports(nat rule)
+
+ link:
+    https://github.com/KamalRathnayake/MeetKamalToday./tree/main/39_AzureP2SVPNGW
+
+do these all in powershell
+
+
+26/5/25
+Azure Devops:
+dev.azure.com 
+
+cftc - centralized repo management tool 
+        make changes locally and push to centralized repo
+
+28/5/25
+function-app
+    
+AZURE POLICY:
+    define at diff levels
+    alreday predefined polices are there- assign the policies
+    allowed locations
+    remediation : policy applicable for new resources
+            existing resources =not following
+            update -policies applicable
+            create managed identity and continue to work with old resources
+    non compliance msg:
+        sir pls create in east us region
+    create 
+
+managed  identities:
+        system created
+        user provided 
+
+
+29/5/25
+site to site vpn
+point to point
+expressroute/vpn
+    encrypted channel -vpn
+azure=virtual network gateway(like remote details)
+local =local network gateway(local details)
+connection b/w both network gateway
+both are in azure onlyy 
+
+throughput=total bandwidth
+
+when created virtual network gateway =we didnt gave any info of ours
+local network gateway:
+    u are giving all details
+    completely related to local area network
+    create
+create a connection b/w them.
+connections:
+
+local network gateway(ust) collects the details of local(abhi) -details not with me in ust
+local machine also knows which machine it talks to in azure?(configurations)
+details in localgateway
+
+31/5/25
+az400:
+
+
+5/6/25
+
+search: microsoft pipeline java
+https://github.com/vilasvarghese/azure_pipeline/blob/main/azure-pipelines.yml
+
+- repo: self # its happening in azure
+stages = executed in parallel
+steps= executed in sequential
+
+multiple stages = executed in diff pools
+hers same pool using
+
+goals: package #mvn package
+                if u want test ->test executed mvn test
+
+saved in azure repo or point to github repo -> automatically create a transaction and merge too github
+
+
+6/6/25
+service principles
+    users -roles changes
+    refer notes
+
+3 diff category of service principles:
+    1.  legacy
+    2.  ext entity(terrafom) can talk to azure and execute things by creating service principles
+    all service connection attached to service principles
+    service principle get access to do those operations(becauseu havae ownership)
+    u dont want to login to acr while pushing because of service connection u r creating and the service principle have that role
+
+   3. managed identities
+        when 1 of the azure resource want to talk to another resource 
+        u dont have to embed any userid/certificate
+        it gets a token from AD and have the permission to talk with
+
+
+
+register an app and api and give access to that things and all
+
+docker-k8s/blob/master/.github/workflows/docker-image.yaml
+
+sla -b/w company and customer within year
+    if we are not able to meet this,will pay back
+
+
+
+
+sre -site relialiable engineer
+    u will be questioned if company needs to pay
+    mostly on production side
+    monitorning
+
+slo -service level object (montly based)
+97% u are in trouble
+        
+
+sli : sre team internally targets and maintains
+
+
+
+create report to read sli
+
+
+7/6/25
+service plan and creating webapp within it -> here we see browse (deployed apps site)
+
+ci and cd dif pipelines
+ci publish it to azure devops artifacts- for cd it takes artifacts from there 
+
+
+site to site: 1 complete organization connecting to cloud
+
+
+scrum:
+    scrum master
+        what u have done
+        wht u r doing
+        wht are the challenges
+
+
+sast tools
+dast tools : ovasaft(angne ntho)
+image scanning : upload image -automatically go to github and find the vulnarabilities and all
+auth 
+migrate 
+
+
+secret management:
+    dynamic provisioning
+
+
+neurelic: monitoring aks
+
+artifacts-> azure
+test integration: 
+
+
+
+feature flag:
+    make the changes in the code
+    if u deploy also people cannot see
+    QA was delaying things ->taking time to test
+    code is there not available for customers
+    when u deploy somethg -consumed later by customers
+    n number of microservices,each microservice do diff works, the teams which are completing the feature include in the code 
+    if other teams are not done...deploy to production but not available to customer until the feature plan enabled
+
+Topics covered and remainting:
+github integration with azure pipelines
+code coverage report
+pipeline health monitoring
+
+
+java:
+/users/.m2 repository/contain all the dependencies
+m2 repo can be cached
+
+docker:
+ovrrlay folder has to be cached
+
+Build optimization:
+    parallel jobs
+    organization settings ->buy 
+
+build agent ananlysis
+        agent coming online sometimes
+
+linting arm template:
+    catch formating issues,standard and static issues in arm templates
+
+cdn:
+soverign cloud deployment:'
+
+blue green releases:
+    
+stages dependencies:
+app configuration
+feature flaging
+automation quality check for aks
+controlled relaesae of controlled deploy of aks
+
+traffic manager and load balancer
+
+security gates
+sonarqube
+remediation:
+    if some policy fails -tasks go and automatically fix it-dlte or correct it
+
+artifactory -azure suports 2:
+    build
+    pipelines  - add to pipeline artifactory
+        if u want to use in somewhere in pipleine, push to pipeline artifacts
+    if everyone need to use it->push to azure artifacts
+
+
+staging:
+    before putting production we can put on staging and check is it working/not.
+    
+
+
+
+#az104
+1.data disk:
+    not bootable disk
+    external disk
+    machine can continue to work without it
+    if we need to migrate the data disk from 1 vm to another -> detach the disk first
+    and attach to next vm
+
+2. deploy vms using arm template and all vms in single availabilty set..
+    u want to make sure the many vms as possible remain accesible in the event of fabric 
+    failure?
+    ans: max value
+
+3. platformFaultDomainCount:3(max)
+    updatedomaincount: 20(max value)
+
+4. current vm should referee to adinistrative password ... then?password->encrypted?
+    ans: keyvault,access policy(rbac)
+
+5. You're in a hybrid Azure AD + on-prem AD environment.
+    VMs are running on Windows Server 2012 R2 Hyper-V (on-prem).
+    You're using PowerShell scripts to automate VM configuration.
+    You're about to create many new VMs.
+
+
+12/6/25
+forked a repo
+    akannan1087/docker-spring-boot
+13/6/25
+    https://medium.com/devops-dudes/implementing-high-availability-with-azure-traffic-manager-b8a62fbe536e
+
+CQRS (Command Query Responsibility Segregation) is a design pattern used to separate read operations (queries) from write operations (commands) in an application.
+
+site to site vpn:
+    azure create a vpn gateway(need subnet with all enabled)
+    also create lan in azure(representing the on premise)
+    we are specificying ip and range 
+
+
+Branching startegy:
+    release Branch and scrum team will test using testcases 
+    2 types of strategy:
+        1. Trunk based strategy
+        2. Git lab flow
+
+1. Trunk based Strategy:
+    only 1 single branch always ready to release
+    people will create feature branch and merge
+    not completely done things can be merged from feature branch to main and to production now
+    here feature flag came to picture 
+    only relased things have feature flag on others off ->but problem
+    problem: cant manage easily
+            these transactions(push,pull req,someone reviw and merged) are very short lived(lessthan a day)
+            multiple times people will merging
+            when u reduce the duration->chances of merge conflict reduced
+            because only small incremental changes going into a branch
+            1. without proper testig things are going
+                    solution: proper automated test
+                            but not every flow u can test and many companies testing strategies are not good,testcases missed
+                            here Gates come into picture
+                                coverage num >80
+                                unit test case coverage more closer
+    solution: Devops engineer can do
+                because sometimes companies sla and all go into problem
+
+
+
+
+
+2. Git lab flow:
+    addition to git hub flow
+
+    u would create diff branch for diff envt eg: develop,stage,dev 
+    envt based branches:
+        dev
+        stage
+        develop
+    completely independent features u have
+    but once it go to stage/merge:
+        staging is more production like 
+        things are properly evaluated
+        whenevr u merge -> pipeline will come
+
+        this is much more organised
+        if u make mistake it can be caught
+        this is more practical
+
+    here we are eliminating manual testing
+    even developers themselves will write testcases
+    quality is like higher level of maintaining automation framework
+    testcase can automatically modify when developer make changee 
+
+    wht do the auto test engineers do?
+        they will write integrating test cases by selenium and all
+        development engineers write the testcase without end users concepts
+    
+    1 developer write and another developer write the testcases(good practice)
+
+Drawbacks of git lab flow:
+    slowing the process and maintain multiple branches
+    always increasing complexity
+    compare with traditional flow:
+            when u do cd u may break things in production so we have fail forward
+                    fail forward:
+                        no shift left option
+                        roll forward
+                            immediately come and fix it and move forward
+
+12 factor app:
+    
+19/6/25
+Monitoring: 
+collect,analyse,monitor,visualize 
+
+installing agents- azure
+agent-collect the data
+store data in log analytics workspace
+
+data collection rule: the data stored in this workspace
+app insight=tracking application(aks cluster),metrix-where data will come by default
+app insight =internally install the agents and push to log analytics workspace
+it shows chart (99 percentile somethg)
+
+azure arc init: install (to store data in log analytics)
+kql=kusto querry language
+to see the data =create dashboard
+
+
+practical: creating log analytics workspace
+
+creating aks cluster?
+
+ promethous can read the data and there should be a port number
+    when u go to port num=everything displayed
+    u can feed them in grafana
+    it can help in visualizing
+    pre created repos -deploy that iself -grafana standarad modifying what about azure if we  are doing in azure?
+
+aks cluster creation
+log analytics creation
+after aks creation=we can enable insights there itself
+aks cluster->monitor->insights->click warnings->this shows kql querry->click + and type ur own querry and execute
+agent:
+vm->insights->performance->performace diagnostics
+vm->alerts->create alert rule-> threshhold=5-> actions->new action rule create->
+notification type->2nd one->
+action-type-> nill
+create
+
+vm ->insights->top n charts
+this is agents ..which sents to log analytics workspace 
+
+5dPWoD3ePauDm5uLn2AgZ5H6pTHhEu16jokynSoGf2GJNaabopzIJQQJ99BFACAAAAAJM7b1AAASAZDO2sUu
+
+
+sonarqube:
+    sonarcloud.io/login
+    azure devops
+    org name: devuser020996
+    pat:
+    
+
+
