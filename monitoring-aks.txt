@@ -1,0 +1,10 @@
+1. Azure Managed Grafana
+2. Azure Monitor workspaces  (configure Grafana with workspace)
+3. Kubernetes services (configure workspace with k8s service)   
+
+take aks
+bottom side->monitoring
+view grafana
+click the name
+click the link
+3 line ->dashboard->
