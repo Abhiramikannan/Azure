@@ -165,4 +165,4 @@ agent is not listening
 maven error:
       java version  (17 )
       sudo update-alternatives --config java
-
+      pom.xml version release changed to 17
