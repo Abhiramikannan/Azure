@@ -1,0 +1,156 @@
+# Create a CI/CD pipeline in Azure DevOps to:
+# Build a Java application using Maven (mvn clean install)
+# Run unit tests
+# Package as a .jar
+# Publish the artifact to Azure Artifacts
+# Deploy to Azure Web App or Azure VM using SSH
+
+# github: https://github.com/jenkins-docs/simple-java-maven-app.git
+
+# 1.dockerfile:
+# FROM openjdk:17-jdk-slim
+# WORKDIR /app
+# COPY target/*.jar app.jar
+# ENTRYPOINT ["java", "-jar","app.jar"]
+# EXPOSE 
+
+# 2. create pipeline (starter pipeline)
+# 3. under steps: search maven in assistance and give code(dependencies: mvn clean install,mvn test)
+# 4. building dockerfile(search docker - acr u should specify)
+# 5. so create acr
+#     az group create --name <resource-group-name> --location <location>
+#     az acr create --resource-group <your-rg> --name <yourACR> --sku Basic
+#     az acr login --name <yourACR> --expose-token(az acr login --name abhiacrexam --expose-token)
+# 6. pipeline: create service connection for acr
+#               docker registry-> give authentication type->service principal
+#               container repo name: abhiacrexam.azurecr.io/java-app:latest  #container registry/imagename:tag
+#               add
+# 7. dont give repo name whole path: give: java-app
+# 8.give tags: latest in bottom
+
+# pipeline:
+# - task: Docker@2
+#   inputs:
+#     containerRegistry: 'abhiacrsc'
+#     repository: 'java-app'
+#     command: 'buildAndPush'
+#     Dockerfile: '**/Dockerfile'
+#     tags: |
+#       latest
+
+#   9. if buildid required give 
+#   10. To Publish the .jar File as an Artifact
+#   assistance: search copy files
+#       add the source and target : these are automatically in azure will points to default /agent/_work/1/s/target
+#       study the folder names
+
+      
+# - task: CopyFiles@2
+#   inputs:
+#     SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+#     Contents: '*.jar'
+#     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
+#   11.publish build artifacts -search
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#       ArtifactName: 'java-artifacts'
+#       publishLocation: 'Container'
+
+#   12.Not required if im using azure web app for containers
+#   deploy to azure vm over ssh
+#   Deploy the .jar to a VM and run it via SSH
+#       steps:
+#         create service connection-ssh
+#         host: systemip
+#         username: abhi
+#         create
+#         add the task
+#   - task: CopyFilesOverSSH@0
+#   inputs:
+#     sshEndpoint: 'ssh-sc'
+#     sourceFolder: '$(Build.ArtifactStagingDirectory)'
+#     contents: '*.jar'
+#     targetFolder: '/home/abhi/app'
+#     readyTimeout: '20000'
+#   - task: SSH@0
+#   inputs:
+#     sshEndpoint: 'ssh-sc'
+#     runOptions: 'commands'
+#     commands: |
+#       pkill -f 'java -jar' || true
+#       nohup java -jar /home/abhi/app/*.jar > app.log 2>&1 &
+#     readyTimeout: '20000'
+
+
+  
+
+#   13.Deploy to Azure Web App (for Containers)
+# azure web app for containers search
+
+
+# - task: AzureWebAppContainer@1
+#   inputs:
+#     azureSubscription: 'abhi-sc1'
+#     appName: 'javaapp'
+#     containers: 'abhiacrexam.azurecr.io/java-app:latest'
+
+
+
+# pipeline:
+
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: abhipool
+  vmImage: abhi-vm
+steps:
+- task: Maven@4
+  inputs:
+    azureSubscription: 'abhi-sc1'
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
+- task: Docker@2
+  inputs:
+    containerRegistry: 'abhiacrsc'
+    repository: 'java-app'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      latest
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+    Contents: '*.jar'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'java-artifacts'
+    publishLocation: 'Container'
+# - task: CopyFilesOverSSH@0
+#   inputs:
+#     sshEndpoint: 'ssh-sc'
+#     sourceFolder: '$(Build.ArtifactStagingDirectory)'
+#     contents: '*.jar'
+#     targetFolder: '/home/abhi/app'
+#     readyTimeout: '20000'
+- task: AzureWebAppContainer@1
+  inputs:
+    azureSubscription: 'abhi-sc1'
+    appName: 'javaapp'
+    containers: 'abhiacrexam.azurecr.io/java-app:latest'
+  
