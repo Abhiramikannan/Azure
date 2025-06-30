@@ -155,14 +155,14 @@ steps:
     containers: 'abhiacrexam.azurecr.io/java-app:latest'
   
 
-Error got:
-agent is not listening
-      maven- install in agent inside vm =solved
+# Error got:
+# agent is not listening
+#       maven- install in agent inside vm =solved
 
-      sudo apt update
-      sudo apt install maven -y
+#       sudo apt update
+#       sudo apt install maven -y
 
-maven error:
-      java version  (17 )
-      sudo update-alternatives --config java
-      pom.xml version release changed to 17
+# maven error:
+#       java version  (17 )
+#       sudo update-alternatives --config java
+#       pom.xml version release changed to 17
