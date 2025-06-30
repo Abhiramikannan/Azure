@@ -161,3 +161,8 @@ agent is not listening
 
       sudo apt update
       sudo apt install maven -y
+
+maven error:
+      java version  (17 )
+      sudo update-alternatives --config java
+
