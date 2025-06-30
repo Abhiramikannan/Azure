@@ -1,4 +1,13 @@
 #acr,availability zone,install apache2
+Q2.. *Write a Terraform script to:*
+* Create a resource group
+* Provision a VM in *Availability Zone 2* of Central India
+* Attach a public IP
+* Install Apache on boot using custom_data
+
+
+
+
 terraform {
   required_providers {
     azurerm = {
