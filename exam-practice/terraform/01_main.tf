@@ -113,3 +113,39 @@ resource "azurerm_linux_virtual_machine" "res-1" {
   }
 }
 
+
+pipeline code:
+==============================
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: abhipool
+  vmImage: abhi-vm
+
+#search azurecli and give command 
+steps:
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: | 
+       curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+       az version
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'abhi-sc1'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      terraform init
+      terraform plan -out=tfplan
+      terraform apply --auto-approve tfplan
+  env:
+    ARM_SUBSCRIPTION_ID: $(subscription)
+    #give subscription id in variable and click variables and copy and paste here in above line it will paste like $(subscription)
