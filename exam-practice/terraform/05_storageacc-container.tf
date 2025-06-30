@@ -49,3 +49,66 @@ output "storage_account_name" {
 output "storage_account_container_name" {
   value=azurerm_storage_container.container.id
 }
+
+
+backend.tf
+terraform{
+    backend "azurerm" {
+        resource_group_name="abhi-rg3"
+        storage_account_name  = "abhistorage9087"
+        container_name        = "abhicont"
+        key                   = "terraform.tfstate"
+    }
+}
+
+pipeline.yml
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: abhipool
+  vmImage: abhi-vm
+
+steps:
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: | 
+       curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+       az version
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'abhi-sc1'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      az version
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'abhi-sc1'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      terraform init
+      terraform plan -out=tfplan
+      terraform apply --auto-approve tfplan
+  env:
+     ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'abhi-sc1'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az storage blob upload \
+        --account-name abhistorage9087 \
+        --container-name abhicont \
+        --name azure-pipelines.yml \
+        --file $(Build.SourcesDirectory)/azure-pipelines.yml 
+      
