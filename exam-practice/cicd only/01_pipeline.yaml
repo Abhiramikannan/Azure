@@ -154,3 +154,10 @@ steps:
     appName: 'javaapp'
     containers: 'abhiacrexam.azurecr.io/java-app:latest'
   
+
+Error got:
+agent is not listening
+      maven- install in agent inside vm =solved
+
+      sudo apt update
+      sudo apt install maven -y
