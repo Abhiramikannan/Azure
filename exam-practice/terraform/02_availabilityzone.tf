@@ -121,7 +121,11 @@ resource "azurerm_linux_virtual_machine" "res-1" {
   }
   custom_data=base64encode(file("install-apache.sh"))  #passing as a file
 }
+# 9. Output public IP
 
+output "public_ip_address" {
+  value = azurerm_public_ip.public_ip.ip_address
+}
 
 
 #install-apache.sh
