@@ -1,0 +1,647 @@
+1. availability zone  and install apache2 
+      rg,vnet,subnet,nsg,publicip,nsg association,nic,vm
+      inside vm -   zone=2
+      inside vm -after source image ref block -      custom_data=base64encode(file("install-apache.sh"))
+      install-apache.sh
+      #!/bin/bash
+      apt update -y
+      apt install -y apache2
+      systemctl enable apache
+      systemctl start apache
+2. availability set
+      same code
+      remove zone=2 from vm
+      rg,vnet,subnet,nsg
+      after nsg add availabilityset block=name,location.rg,managed=true,platform_fault_domain_count=2,update=2
+      count=2 for publicip,nsg association,nic,,vm
+      ${count.index+1} =publicip,nic,vm
+      [count.index] =nic,association,vm
+      vm=added availabilityset line = availability_set_id=azurerm_availability_set.availset.id 
+      #inside vm block= [azurerm_network_interface.nic[count.index].id] need []
+3. 2 vms in 2 subnets with variables vm_size and location , output
+        vnet,subnet1,subnet2,nsg,rules(ssh,icmp),nic1,nic2,publicip1,publicip2,associations(subnet1,subnet2),vm1,vm2,variables declared (type,description.default)
+        output "publicip"{azurerm_publicip.publicip.ip_address}
+4. bastion host
+    norml subnet create with name bastion_host  {["10.0.1.0/27"] # Must be /27 or larger}
+    give public ip 
+resource "azurerm_bastion_host" "bastion" {
+    name = "my-bastion"
+    location = var.location
+    resource_group_name = azurerm_resource_group.rg.name
+    dns_name = "bastionhost-${var.location}" # Optional
+    ip_configuration {
+      name = "bastion-ipconfig"
+      subnet_id = azurerm_subnet.bastion.id
+      public_ip_address_id = azurerm_public_ip.bastion_ip.id
+}
+}
+
+
+
+5. vnet peering
+
+resource "azurerm_virtual_network_peering" "peerAtoB" {
+  name = "peerAtoB"
+  resource_group_name = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnetA.name
+  remote_virtual_network_id = azurerm_virtual_network.vnetB.id
+  allow_forwarded_traffic = true
+  allow_virtual_network_access = true
+  
+  }
+
+resource "azurerm_virtual_network_peering" "peerBtoA" {
+    name = "peerBtoA"
+    resource_group_name = azurerm_resource_group.rg.name
+    virtual_network_name = azurerm_virtual_network.vnetB.name
+    remote_virtual_network_id = azurerm_virtual_network.vnetA.id
+    allow_forwarded_traffic = true
+    allow_virtual_network_access = true
+    }
+
+
+
+6.store pipeline in the container
+
+		a. create storage acc -name,locn,rg,account_tier,account_replication_type
+
+		b. create container name,storageacc name,container_access_type=blob/private
+
+		c. use command:
+
+		az storage blob upload \
+   --account-name devopspipelinecode \
+   --container-name pipeline-code \
+  --name azure-pipelines.yml \
+   --file $(Build.SourcesDirectory)/azure-pipelines.yml 
+
+
+
+terraform code:
+
+provider "azurerm" {
+features {}
+}
+
+# Resource Group
+resource "azurerm_resource_group" "rg" {
+ name = "devops-rg"
+ location = "centralindia"
+}
+
+# Storage Account
+resource "azurerm_storage_account" "storage" {
+ name = "devopspipelinecode" # Must be globally unique & 3–24 lowercase letters/numbers
+ resource_group_name = azurerm_resource_group.rg.name
+ location = azurerm_resource_group.rg.location
+ account_tier = "Standard"
+account_replication_type = "LRS"
+}
+
+# Blob Container
+resource "azurerm_storage_container" "pipeline_code" {
+name = "pipeline-code"
+storage_account_name = azurerm_storage_account.storage.name
+container_access_type = "private" # Could be "blob" if public read access needed
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+7.storing tfstatefile in container
+
+
+
+terraform{
+ backend "azurerm" {
+  resource_group_name="abhi-rg3"
+  storage_account_name = "abhistorage9087"
+  container_name = "abhicont"
+  key = "terraform.tfstate"
+
+  }
+
+}
+
+
+
+import to tfstate file:
+
+terraform import azurerm_resource_group.rg /subscriptions/cca592d9-b28a-4c1e-aab8-91dae91b6227/resourcegroups/abhi-rg3
+
+vnet:
+
+terraform import azurerm_virtual_network.vnet /subscriptions/<subscription_id>/resourceGroups/<resource_group>/providers/Microsoft.Network/virtualNetworks/<vnet_name>
+
+vm:
+
+terraform import azurerm_linux_virtual_machine.res-1 /subscriptions/cca592d9-b28a-4c1e-aab8-91dae91b6227/resourceGroups/abhi-rg3/providers/Microsoft.Compute/virtualMachines/abhi-vm1
+
+
+
+terraform import azurerm_subnet.subnet2 /subscriptions/cca592d9-b28a-4c1e-aab8-91dae91b6227/resourceGroups/abhi-rg3/providers/Microsoft.Network/virtualNetworks/abhi-vm-vnet1/subnets/abhi-subnet2
+
+
+
+terraform import azurerm_storage_account.sa /subscriptions/cca592d9-b28a-4c1e-aab8-91dae91b6227/resourceGroups/abhi-rg3/providers/Microsoft.Storage/storageAccounts/abhistorage9087
+
+
+
+terraform import azurerm_storage_container.container "/subscriptions/cca592d9-b28a-4c1e-aab8-91dae91b6227/resourceGroups/abhi-rg3/providers/Microsoft.Storage/storageAccounts/abhistorage9087/blobServices/default/containers/abhicont"
+
+
+
+
+
+storing in the container:
+
+	az storage blob upload \
+
+--account-name devopspipelinecode \
+
+  --container-name pipeline-code \
+
+  --name azure-pipelines.yml \
+
+  --file $(Build.SourcesDirectory)/azure-pipelines.yml \
+
+  --auth-mode login
+
+
+
+az role assignment create \
+
+ --assignee <SP-Object-ID> \
+
+ --role "Storage Blob Data Contributor" \
+
+ --scope "/subscriptions/<subscription_id>/resourceGroups/abhi-rg3/providers/Microsoft.Storage/storageAccounts/abhistorage9087"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+8.cicd of dotnet,java,nodejs,python
+
+	dotnet:
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
+WORKDIR /src
+
+COPY *.csproj ./
+
+RUN dotnet restore
+
+COPY . .
+
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "eShop.AppHost.dll"]
+
+
+
+node:
+
+FROM node:12-alpine
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+ CMD ["npm", "start"]
+
+
+
+
+
+python:
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+EXPOSE 6000
+
+CMD ["python", "app.py"]
+
+
+
+java:
+
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+COPY target/*.jar app.jar
+
+EXPOSE 5000
+
+CMD ["java" ,"-jar" "app.jar"]
+
+
+
+======================================
+
+to run biceps:
+
+az deployment group create \
+
+ --resource-group devn29rg \
+
+ --template-file main.bicep
+
+
+
+
+
+================================
+
+9.az install
+
+steps:
+
+- task: Bash@3
+
+ inputs:
+
+  targetType: 'inline'
+
+  script: |
+
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+    az version
+
+
+
+===============================================
+
+10.acr
+
+az group create --name <resource-group-name> --location <location>
+
+# az acr create --resource-group <your-rg> --name <yourACR> --sku Basic
+
+# az acr login --name <yourACR> --expose-token(az acr login --name abhiacrexam --expose-token)
+
+===============================================
+
+
+
+
+
+
+
+sonar-project.properties
+
+=======================
+
+python:
+
+
+
+sonar.projectKey=python-backend
+
+sonar.sources=.
+
+sonar.language=py
+
+sonar.host.url=http://<SONARQUBE_HOST>:9000
+
+sonar.login=<SONAR_TOKEN>
+
+
+
+
+
+python -m pip install --upgrade pip
+
+pip install -r requirements.txt
+
+
+
+node:
+
+
+
+sonar.projectKey=node-frontend
+
+sonar.sources=.
+
+sonar.host.url=http://<SONARQUBE_HOST>:9000
+
+sonar.login=<SONAR_TOKEN>
+
+
+
+
+
+dependences:
+
+npm install
+
+npm run build
+
+npm test
+
+
+
+
+
+java:
+
+
+
+sonar.projectKey=java-backend
+
+sonar.sources=src
+
+sonar.java.binaries=target
+
+sonar.host.url=http://<SONARQUBE_HOST>:9000
+
+sonar.login=<SONAR_TOKEN>
+
+
+
+mvn clean install
+
+mvn test
+
+
+
+
+
+
+
+
+
+
+
+pipeline:
+
+
+
+trigger:
+
+ branches:
+
+  include:
+
+  - dev-v1
+
+resources:
+
+ repositories:
+
+ - repository: self
+
+variables:
+
+- name: dockerRegistryServiceConnection
+
+ value: '6089ae25-49c1-483a-8959-577715d6c2a7'
+
+- name: imageRepository
+
+ value: 'moneyfiapigateway'
+
+- name: containerRegistry
+
+ value: 'gowriacr.azurecr.io'
+
+- name: dockerfilePath
+
+ value: '**/Dockerfile'
+
+- name: tag
+
+ value: '$(Build.BuildId)'
+
+- name: imagePullSecret
+
+ value: 'gowriacra81e-auth'
+
+- name: poolname
+
+ value: agentpool
+
+- name: vmImageName
+
+ value: gowrivm1
+
+stages:
+
+- stage: Build
+
+ displayName: Build stage
+
+ jobs:
+
+ - job: Build
+
+  displayName: Build
+
+  pool:
+
+   name: $(poolname)
+
+   vmImage: $(vmImageName)
+
+  steps:
+
+  - task: Docker@2
+
+   displayName: Build and push an image to container registry
+
+   inputs:
+
+    command: buildAndPush
+
+    repository: $(imageRepository)
+
+    dockerfile: $(dockerfilePath)
+
+    containerRegistry: $(dockerRegistryServiceConnection)
+
+    tags: |
+
+     $(tag)
+
+  - task: ecdc45f6-832d-4ad9-b52b-ee49e94659be@0
+
+   inputs:
+
+    targetPath: manifests
+
+    artifactName: manifests
+
+- stage: Deploy
+
+ displayName: Deploy stage
+
+ dependsOn:
+
+ - Build
+
+ jobs:
+
+ - deployment: Deploy
+
+  displayName: Deploy
+
+  pool:
+
+   name: $(poolname)
+
+   vmImage: $(vmImageName)
+
+  environment:
+
+   name: 'MoneyFiapigatewaygit.default'
+
+  strategy:
+
+   runOnce:
+
+    deploy:
+
+     steps:
+
+     - task: KubernetesManifest@0
+
+      displayName: Create imagePullSecret
+
+      inputs:
+
+       action: createSecret
+
+       secretName: $(imagePullSecret)
+
+       dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+     - task: KubernetesManifest@0
+
+      displayName: Deploy to Kubernetes cluster
+
+      inputs:
+
+       action: deploy
+
+       manifests: |
+
+        $(Pipeline.Workspace)/manifests/deployment.yml
+
+        $(Pipeline.Workspace)/manifests/service.yml
+
+       imagePullSecrets: |
+
+        $(imagePullSecret)
+
+       containers: |
+
+        $(containerRegistry)/$(imageRepository):$(tag)
+
+ 
+
+trigger:
+
+ branches:
+
+  include:
+
+  - main
+
+pool:
+
+ name: agentpool
+
+ vmImage: gowrivm
+
+stages:
+
+- stage: build
+
+ jobs:
+
+ - job: build
+
+  displayName: restore
+
+  steps:
+
+  - task: DotNetCoreCLI@2
+
+   inputs:
+
+    command: 'build'
+
+    projects: '**/*.sln'
+
+  - task: DotNetCoreCLI@2
+
+   inputs:
+
+    command: 'test'
+
+    projects: 'tests/UnitTests/**.csproj'
+
+    testRunTitle: 'test'
+
+  - task: DotNetCoreCLI@2
+
+   inputs:
+
+    command: 'publish'
+
+    publishWebProjects: true
+
+ 
+
+
+
+
+
+
+
+
+
