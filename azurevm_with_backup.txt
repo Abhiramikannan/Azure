@@ -1,0 +1,21 @@
+creating vm with backup:
+
+create vm and enabled backup and gave custom data for install docker(recovery service vault)
+or
+with json file we can create everything using azure client
+
+or
+    create recovery service vault
+        deny public access 
+            azure backup
+
+manage - backup policies -add - create policy
+our vault - settings -backup -configure backup
+
+what i have done here:
+    in the recovery service vault
+            abhi-vault ->backup now
+            
+
+
+replication services:
