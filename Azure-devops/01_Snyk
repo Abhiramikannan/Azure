@@ -1,5 +1,6 @@
 #security
-#done before deploying to clusters
+#done before deploying to clusters\
+#require synk token ..get from official website
 
 
 - job: SecurityScan
