@@ -1,0 +1,5 @@
+az provider register -n Microsoft.AzureTerraform
+ 
+check using:
+az provider show -n Microsoft.AzureTerraform
+registeredState should be either Registering or Registered
