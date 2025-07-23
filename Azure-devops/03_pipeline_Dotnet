@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+    - main
+pool:
+  name: agentpool
+  vmImage: gowrivm
+stages:
+- stage: build
+  jobs:
+  - job: build
+    displayName: restore
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: '**/*.sln'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: 'tests/UnitTests/**.csproj'
+        testRunTitle: 'test'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
