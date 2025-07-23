@@ -1,0 +1,202 @@
+
+#example of gowris code
+
+trigger:
+- dev-v1
+ 
+resources:
+- repo: self
+ 
+variables:
+  dockerRegistryServiceConnection: 'cd64edaf-bbc2-474e-92a9-62e0994ffc08'
+  imageRepository: 'moneyfi-apigateway'
+  containerRegistry: 'sankarmoneyfiacr.azurecr.io'
+  dockerfilePath: 'Dockerfile'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'sankarmoneyfiacr7820-auth'
+  poolname: agentpool
+  vmImageName: 'gowriAM'
+  k8sConnection1: 'df6fc2a5-ad51-4dd0-865e-35869dee863e'
+  k8sConnection2: '32851c9b-d273-400c-b646-a9a38e21dd39'
+  kvServiceConnection: '9d2931f3-e261-4c38-a081-22cd6b3df6e8' 
+  keyVaultName: 'gowridbkeys'         
+ 
+# ---------------- BUILD STAGE ----------------
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build and Push
+    pool:
+      name: $(poolname)
+      vmImage: $(vmImageName)
+    steps:
+    - checkout: self
+      fetchDepth: 0
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean verify '  # Ensure JaCoCo report is generated
+        options: '-DskipTests=false'
+        # javaHomeOption: 'JDKVersion'
+        # jdkVersionOption: '17'
+        # mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+    
+    # Step 2: Publish JUnit Test Results
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        testRunTitle: 'JUnit Test Results'
+        mergeTestResults: true
+ 
+    #Step 3: Publish Code Coverage Results
+    - task: PublishCodeCoverageResults@2
+      inputs:
+        summaryFileLocation: '**/target/site/jacoco/jacoco.xml'
+        failIfCoverageEmpty: true
+    
+    # Step 4: SonarCloud Analysis Preparation
+    - task: SonarCloudPrepare@3
+      inputs:
+        SonarCloud: '96425295-080b-4698-948b-6349e85b2f09'
+        organization: 'sankario'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'SankarIO_MoneyFi-api-gateway'
+        cliProjectName: 'MoneyFi-api-gateway'
+        cliSources: 'src/main/java'
+        extraProperties: |
+          sonar.junit.reportPaths=target/surefire-reports
+          sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+ 
+ 
+# Step 5: Run SonarCloud Analysis
+    - task: Maven@4
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'sonar:sonar'
+        # javaHomeOption: 'JDKVersion'
+        # jdkVersionOption: '17'
+        # mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+ 
+# Step 6: Publish SonarCloud Quality Gate Result
+    - task: SonarCloudPublish@3
+      inputs:
+        pollingTimeoutSec: '300'
+    - task: Docker@2
+      displayName: Build and push an image to ACR
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+ 
+    - publish: manifests
+      artifact: manifests
+ 
+# ---------------- DEPLOY TO CLUSTER 1 ----------------
+- stage: DeployCluster1
+  displayName: Deploy to AKS Cluster 1
+  dependsOn: Build
+  jobs:
+  - deployment: DeployToCluster1
+    displayName: Deploy to Cluster 1
+    environment: 'moneyfi-cluster1-env'
+    pool:
+      name: $(poolname)
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        preDeploy:
+          steps:
+          - task: AzureKeyVault@2
+            name: FetchSecrets1
+            inputs:
+              azureSubscription: $(kvServiceConnection)
+              KeyVaultName: $(keyVaultName)
+              SecretsFilter: '*'
+              RunAsPreJob: true
+ 
+        deploy:
+          steps:
+          - download: current
+            artifact: manifests
+ 
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret (Cluster 1)
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              kubernetesServiceConnection: $(k8sConnection1)
+ 
+          - task: KubernetesManifest@0
+            displayName: Deploy to AKS Cluster 1
+            inputs:
+              action: deploy
+              manifests: |
+                deployment.yml
+                service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+              kubernetesServiceConnection: $(k8sConnection1)
+ 
+# ---------------- DEPLOY TO CLUSTER 2 ----------------
+- stage: DeployCluster2
+  displayName: Deploy to AKS Cluster 2
+  dependsOn: Build
+  jobs:
+  - deployment: DeployToCluster2
+    displayName: Deploy to Cluster 2
+    environment: 'moneyfi-cluster2-env'
+    pool:
+      name: $(poolname)
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        preDeploy:
+          steps:
+          - task: AzureKeyVault@2
+            name: FetchSecrets2
+            inputs:
+              azureSubscription: $(kvServiceConnection)
+              KeyVaultName: $(keyVaultName)
+              SecretsFilter: '*'
+              RunAsPreJob: true
+ 
+        deploy:
+          steps:
+          - download: current
+            artifact: manifests
+ 
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret (Cluster 2)
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              kubernetesServiceConnection: $(k8sConnection2)
+ 
+          - task: KubernetesManifest@0
+            displayName: Deploy to AKS Cluster 2
+            inputs:
+              action: deploy
+              manifests: |
+                deployment.yml
+                service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+              kubernetesServiceConnection: $(k8sConnection2)
+ 
