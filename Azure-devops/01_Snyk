@@ -1,4 +1,8 @@
-  - job: SecurityScan
+#security
+#done before deploying to clusters
+
+
+- job: SecurityScan
     displayName: Run Snyk for SCM
     dependsOn: LintAndTest
     steps:
