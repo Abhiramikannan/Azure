@@ -1,0 +1,98 @@
+Networking:
+    1. container to container on same pod on same node
+    2. container to container on 2 diff pods on same node
+    3. container to container of 2 diff pods on 2 diff nodes
+    4. container/pod to service
+
+1.  container to container on same pod on same node: Localhost
+                    linux kernal capability -localhost
+
+    Containers inside the same Pod share:
+        Same network namespace (localhost interface).
+        Same IP address & port space.
+        Can communicate via localhost:<port> directly.
+        This is done by Linux kernel using shared namespaces (Network, PID, IPC, etc.).
+
+2.  container to container on 2 diff pods on same node: bridge
+        Each pod -Unique ip address
+        on same node - 
+            pods are connected via veth pairs to bridge
+            bridge acts as network switch
+                    Performs MAC address resolution (ARP broadcast) and switching.
+                    use handshake signal
+
+        routing table -
+                it wont come here. y?
+                    if the ip address is not the part of cidr range 
+                    then it will forward packets to nodes routing table
+        pod to pod -same node -routing table wont touched
+
+3.  container to container of 2 diff pods on 2 diff nodes : network plugins
+                if pod A(node1) need to talk to Pod B of another node(node2)
+                pod A sents packet - via veth to bridge
+                Bridge does not check IP ranges directly.
+The bridge works at Layer 2 (MAC level).
+It tries to forward based on MAC table.
+If the bridge doesn’t know the MAC (because Pod B is on another node),
+the packet will go to Node 1's routing table.
+Routing Table checks the destination Pod IP:
+        It checks is the destination Pod IP inside this node's CIDR?
+        If NO, it forwards the packet via default route or specific route managed by the CNI plugin.
+The CNI plugin (like Flannel, Calico, Weave) takes over the packet.
+It encapsulates it (if using overlay) or directly routes (if using underlay like Calico BGP).
+It ensures the packet reaches Node 2.
+On Node 2, the CNI/plugin decapsulates (if overlay) and delivers to bridge (cni0).
+Bridge now knows the Pod B’s veth → forwards packet to Pod B.
+
+confusions cleared:
+    Routing table comes into play ONLY 
+        when the bridge can't resolve the destination MAC 
+            (which happens when the pod is on another node).
+
+     The routing table in the node routes the packet to the CNI plugin, 
+        and the plugin takes care of sending to the other node's bridge.
+
+4. container/pod to service:
+        Pod sends request to Service IP (ClusterIP).(eg:10.96.0.100)
+                                        This IP is not tied to any Pod directly.
+        The request reaches the node's network bridge
+        The bridge does NOT know anything about Services or Pods directly.
+        kube-proxy, which runs on each node, has already installed iptables (or IPVS) rules.
+        proxy on each node talking to api server and get the list of pods asscociated with services
+        what all the pods asscociated with service already in etcd. 
+
+        Q. What do these iptables rules do?
+                These rules are written like:
+                    If any packet is going to Service IP 10.96.0.100,
+                    automatically change that packet's destination
+                    to one of the Pod IPs behind the Service (e.g., 10.244.1.20, 10.244.1.21).
+
+                    rewritting the service ip to selected pods ip (DNAT)
+      Once the IP is rewritten by iptables (handled by kube-proxy), the bridge 
+      forwards the packet to the correct Pod.
+
+       At this point, the bridge just sees a packet with a Pod IP destination,
+       and since the bridge knows all the Pods' IPs on the node,
+       it forwards it directly to the container's network interface.
+
+    do the load balancing.how?
+        there is a constant communication b/w worker nodes and master
+        kubeproxy will continuous get the pods asociated with  the services
+        load balancing done by kubeproxy(b/w serveral instance of service done by kubeproxy)
+                    
+    to see end points:
+        describe service
+    what are end points:
+        ip addresses associated with the service
+        if a new pod comes up, if pod crashes -ip address removed from end point 
+    kubelet always sent data to?
+        api server 
+        kublet continuousely run on all nodes..
+        kublet on each node give info to api server and to etcd 
+    kubeproxy:
+        all the kubeproxy in all nodes have same information 
+        kubeproxy knows:
+            pods and ip address associated to the services
+        change denating
+            cluster ip address change to pods ip address
+        then comes to custom bridge
