@@ -1,0 +1,27 @@
+  - job: SecurityScan
+    displayName: Run Snyk for SCM
+    dependsOn: LintAndTest
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '20.x'
+        displayName: 'Ensure Node.js for Snyk'
+ 
+      - script: |
+          echo "Installing Snyk CLI..."
+          npm install -g snyk
+        displayName: 'Install Snyk CLI'
+ 
+      - script: |
+          echo "Authenticating with Snyk..."
+          snyk auth $(SNYK_TOKEN)
+        env:
+          SNYK_TOKEN: $(SNYK_TOKEN)
+        displayName: 'Authenticate Snyk'
+ 
+      - script: |
+ 
+          snyk test --all-projects --severity-threshold=medium --json > snyk-report.json
+          cat snyk-report.json
+        displayName: 'Run Snyk Test'
+ 
